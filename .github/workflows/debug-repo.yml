@@ -1,0 +1,44 @@
+name: Debug Repository Contents
+
+on:
+  workflow_dispatch:
+
+jobs:
+  debug-repo:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Debug repository contents
+        run: |
+          echo "=== Current working directory ==="
+          pwd
+          
+          echo "=== Repository root contents ==="
+          ls -la
+          
+          echo "=== Looking for field-service-app ==="
+          if [ -d "field-service-app" ]; then
+            echo "field-service-app directory found!"
+            ls -la field-service-app/
+          else
+            echo "field-service-app directory NOT found"
+          fi
+          
+          echo "=== Looking for package.json files ==="
+          find . -name "package.json" -type f 2>/dev/null || echo "No package.json files found"
+          
+          echo "=== Looking for package-lock.json files ==="
+          find . -name "package-lock.json" -type f 2>/dev/null || echo "No package-lock.json files found"
+          
+          echo "=== Git status ==="
+          git status
+          
+          echo "=== Git remote ==="
+          git remote -v
+          
+          echo "=== Repository info ==="
+          echo "GITHUB_REPOSITORY: $GITHUB_REPOSITORY"
+          echo "GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
