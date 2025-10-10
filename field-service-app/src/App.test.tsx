@@ -2,8 +2,15 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import App from './App';
 
-test('renders learn react link', () => {
+test('renders field service app', () => {
   render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+  // The app shows a loading state initially, so test for that
+  const loadingElement = screen.getByText(/loading/i);
+  expect(loadingElement).toBeInTheDocument();
+});
+
+test('renders without crashing', () => {
+  render(<App />);
+  // Just test that the app renders without throwing an error
+  expect(document.body).toBeInTheDocument();
 });
