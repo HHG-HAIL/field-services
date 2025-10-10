@@ -186,8 +186,15 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-          cache-dependency-path: 'field-service-app/package-lock.json'
+
+      - name: Cache Node modules
+        if: ${{ matrix.service == 'frontend' }}
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
       - name: Cache Maven dependencies
         if: ${{ matrix.service != 'frontend' }}
