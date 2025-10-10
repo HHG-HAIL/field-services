@@ -1,0 +1,9 @@
+com\fieldservice\technician\service\TechnicianService.class
+com\fieldservice\technician\controller\TechnicianController.class
+com\fieldservice\technician\config\SwaggerConfig.class
+com\fieldservice\technician\config\CorsConfig.class
+com\fieldservice\technician\dto\TechnicianDTO.class
+com\fieldservice\technician\entity\Technician$Status.class
+com\fieldservice\technician\entity\Technician.class
+com\fieldservice\technician\repository\TechnicianRepository.class
+com\fieldservice\technician\TechnicianServiceApplication.class

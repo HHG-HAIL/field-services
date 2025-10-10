@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CORS Test</title>
+</head>
+<body>
+    <h1>Backend CORS Test</h1>
+    <div id="results"></div>
+    
+    <script>
+        const results = document.getElementById('results');
+        
+        async function testEndpoint(name, url) {
+            try {
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    results.innerHTML += `<p>✅ ${name}: SUCCESS (Status: ${response.status})</p>`;
+                } else {
+                    results.innerHTML += `<p>⚠️ ${name}: HTTP Error ${response.status}</p>`;
+                }
+            } catch (error) {
+                results.innerHTML += `<p>❌ ${name}: CORS/Network Error - ${error.message}</p>`;
+            }
+        }
+        
+        // Test all backend endpoints
+        setTimeout(() => {
+            results.innerHTML = '<h2>Testing Backend Services...</h2>';
+            
+            testEndpoint('Work Orders Service', 'http://localhost:8081/api/work-orders');
+            testEndpoint('Technicians Service', 'http://localhost:8082/api/technicians');
+            testEndpoint('Schedules Service', 'http://localhost:8083/api/schedules');
+        }, 1000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Test</title>
+</head>
+<body>
+    <h1>Backend API Test</h1>
+    <div id="results"></div>
+    
+    <script>
+        async function testAPI() {
+            const results = document.getElementById('results');
+            
+            try {
+                console.log('Testing Work Orders API...');
+                const workOrdersResponse = await fetch('http://localhost:8081/api/work-orders');
+                const workOrders = await workOrdersResponse.json();
+                results.innerHTML += `<p>✅ Work Orders API: ${workOrders.length} items</p>`;
+                
+                console.log('Testing Technicians API...');
+                const techniciansResponse = await fetch('http://localhost:8082/api/technicians');
+                const technicians = await techniciansResponse.json();
+                results.innerHTML += `<p>✅ Technicians API: ${technicians.length} items</p>`;
+                
+                console.log('Testing Schedules API...');
+                const schedulesResponse = await fetch('http://localhost:8083/api/schedules');
+                const schedules = await schedulesResponse.json();
+                results.innerHTML += `<p>✅ Schedules API: ${schedules.length} items</p>`;
+                
+            } catch (error) {
+                console.error('API Test Error:', error);
+                results.innerHTML += `<p>❌ Error: ${error.message}</p>`;
+            }
+        }
+        
+        testAPI();
+    </script>
+</body>
+</html>

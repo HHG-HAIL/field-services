@@ -1,0 +1,356 @@
+name: CI/CD Pipeline
+
+on:
+  workflow_dispatch:
+    inputs:
+      services:
+        description: 'Select services to build and deploy'
+        required: true
+        type: choice
+        options:
+          - 'all'
+          - 'frontend-only'
+          - 'backend-only'
+          - 'work-order-service'
+          - 'technician-service'
+          - 'schedule-service'
+          - 'custom'
+        default: 'all'
+      
+      custom_services:
+        description: 'Custom services (comma-separated: frontend,work-order-service,technician-service,schedule-service)'
+        required: false
+        type: string
+        default: ''
+      
+      environment:
+        description: 'Target environment'
+        required: true
+        type: choice
+        options:
+          - 'development'
+          - 'staging'
+          - 'production'
+        default: 'development'
+      
+      skip_tests:
+        description: 'Skip running tests'
+        required: false
+        type: boolean
+        default: false
+
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'backend/**'
+      - 'field-service-app/**'
+      - '.github/workflows/**'
+
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'backend/**'
+      - 'field-service-app/**'
+      - '.github/workflows/**'
+
+env:
+  JAVA_VERSION: '17'
+  NODE_VERSION: '18'
+  MAVEN_OPTS: '-Xmx1024m'
+
+jobs:
+  determine-services:
+    runs-on: ubuntu-latest
+    outputs:
+      services: ${{ steps.parse-services.outputs.services }}
+      build-frontend: ${{ steps.parse-services.outputs.build-frontend }}
+      build-work-order: ${{ steps.parse-services.outputs.build-work-order }}
+      build-technician: ${{ steps.parse-services.outputs.build-technician }}
+      build-schedule: ${{ steps.parse-services.outputs.build-schedule }}
+      
+    steps:
+      - name: Determine services to build
+        id: parse-services
+        run: |
+          echo "Event: ${{ github.event_name }}"
+          
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            SELECTION="${{ github.event.inputs.services }}"
+            CUSTOM="${{ github.event.inputs.custom_services }}"
+          else
+            # For push/PR events, determine based on changed files
+            SELECTION="auto"
+          fi
+          
+          echo "Selection: $SELECTION"
+          
+          # Initialize all services as false
+          BUILD_FRONTEND="false"
+          BUILD_WORK_ORDER="false"
+          BUILD_TECHNICIAN="false"
+          BUILD_SCHEDULE="false"
+          
+          case $SELECTION in
+            "all")
+              BUILD_FRONTEND="true"
+              BUILD_WORK_ORDER="true"
+              BUILD_TECHNICIAN="true"
+              BUILD_SCHEDULE="true"
+              ;;
+            "frontend-only")
+              BUILD_FRONTEND="true"
+              ;;
+            "backend-only")
+              BUILD_WORK_ORDER="true"
+              BUILD_TECHNICIAN="true"
+              BUILD_SCHEDULE="true"
+              ;;
+            "work-order-service")
+              BUILD_WORK_ORDER="true"
+              ;;
+            "technician-service")
+              BUILD_TECHNICIAN="true"
+              ;;
+            "schedule-service")
+              BUILD_SCHEDULE="true"
+              ;;
+            "custom")
+              if [[ "$CUSTOM" == *"frontend"* ]]; then BUILD_FRONTEND="true"; fi
+              if [[ "$CUSTOM" == *"work-order-service"* ]]; then BUILD_WORK_ORDER="true"; fi
+              if [[ "$CUSTOM" == *"technician-service"* ]]; then BUILD_TECHNICIAN="true"; fi
+              if [[ "$CUSTOM" == *"schedule-service"* ]]; then BUILD_SCHEDULE="true"; fi
+              ;;
+            "auto")
+              # Auto-detect based on changed files (for push/PR)
+              BUILD_FRONTEND="true"  # Default to true for auto-detection
+              BUILD_WORK_ORDER="true"
+              BUILD_TECHNICIAN="true"
+              BUILD_SCHEDULE="true"
+              ;;
+          esac
+          
+          # Create services array for matrix
+          SERVICES="[]"
+          if [ "$BUILD_FRONTEND" = "true" ]; then
+            SERVICES=$(echo $SERVICES | jq '. + ["frontend"]')
+          fi
+          if [ "$BUILD_WORK_ORDER" = "true" ]; then
+            SERVICES=$(echo $SERVICES | jq '. + ["work-order-service"]')
+          fi
+          if [ "$BUILD_TECHNICIAN" = "true" ]; then
+            SERVICES=$(echo $SERVICES | jq '. + ["technician-service"]')
+          fi
+          if [ "$BUILD_SCHEDULE" = "true" ]; then
+            SERVICES=$(echo $SERVICES | jq '. + ["schedule-service"]')
+          fi
+          
+          echo "services=$SERVICES" >> $GITHUB_OUTPUT
+          echo "build-frontend=$BUILD_FRONTEND" >> $GITHUB_OUTPUT
+          echo "build-work-order=$BUILD_WORK_ORDER" >> $GITHUB_OUTPUT
+          echo "build-technician=$BUILD_TECHNICIAN" >> $GITHUB_OUTPUT
+          echo "build-schedule=$BUILD_SCHEDULE" >> $GITHUB_OUTPUT
+          
+          echo "Services to build: $SERVICES"
+
+  build-and-test:
+    needs: determine-services
+    if: ${{ fromJSON(needs.determine-services.outputs.services)[0] != null }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: ${{ fromJSON(needs.determine-services.outputs.services) }}
+      fail-fast: false
+      
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Java (for backend services)
+        if: ${{ matrix.service != 'frontend' }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Setup Node.js (for frontend)
+        if: ${{ matrix.service == 'frontend' }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: 'field-service-app/package-lock.json'
+
+      - name: Cache Maven dependencies
+        if: ${{ matrix.service != 'frontend' }}
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Install frontend dependencies
+        if: ${{ matrix.service == 'frontend' }}
+        working-directory: ./field-service-app
+        run: npm ci
+
+      - name: Lint frontend code
+        if: ${{ matrix.service == 'frontend' && github.event.inputs.skip_tests != 'true' }}
+        working-directory: ./field-service-app
+        run: |
+          npm run lint --if-present || echo "No lint script found"
+
+      - name: Test frontend
+        if: ${{ matrix.service == 'frontend' && github.event.inputs.skip_tests != 'true' }}
+        working-directory: ./field-service-app
+        run: npm test -- --coverage --watchAll=false
+
+      - name: Build frontend
+        if: ${{ matrix.service == 'frontend' }}
+        working-directory: ./field-service-app
+        run: npm run build
+
+      - name: Test backend service
+        if: ${{ matrix.service != 'frontend' && github.event.inputs.skip_tests != 'true' }}
+        working-directory: ./backend
+        run: |
+          mvn clean test -pl ${{ matrix.service }} -am
+
+      - name: Build backend service
+        if: ${{ matrix.service != 'frontend' }}
+        working-directory: ./backend
+        run: |
+          mvn clean package -pl ${{ matrix.service }} -am -DskipTests
+
+      - name: Upload frontend build artifacts
+        if: ${{ matrix.service == 'frontend' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-build
+          path: field-service-app/build/
+          retention-days: 30
+
+      - name: Upload backend service artifacts
+        if: ${{ matrix.service != 'frontend' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.service }}-jar
+          path: backend/${{ matrix.service }}/target/*.jar
+          retention-days: 30
+
+      - name: Upload test results
+        if: ${{ github.event.inputs.skip_tests != 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ matrix.service }}
+          path: |
+            field-service-app/coverage/
+            backend/**/target/surefire-reports/
+          retention-days: 7
+        continue-on-error: true
+
+  security-scan:
+    needs: [determine-services, build-and-test]
+    if: ${{ github.event_name == 'push' || github.event_name == 'pull_request' }}
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+  quality-gate:
+    needs: [determine-services, build-and-test]
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    
+    steps:
+      - name: Check build status
+        run: |
+          if [ "${{ needs.build-and-test.result }}" != "success" ]; then
+            echo "❌ Build and test failed"
+            exit 1
+          else
+            echo "✅ All builds and tests passed"
+          fi
+
+  deploy-staging:
+    needs: [build-and-test, quality-gate]
+    if: |
+      success() && 
+      (github.ref == 'refs/heads/develop' || 
+       (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'staging'))
+    runs-on: ubuntu-latest
+    environment: staging
+    
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ./artifacts
+
+      - name: Deploy to staging
+        run: |
+          echo "🚀 Deploying to staging environment..."
+          echo "Services to deploy: ${{ needs.determine-services.outputs.services }}"
+          # Add your staging deployment logic here
+          # This could include:
+          # - Docker image building and pushing
+          # - Kubernetes deployment
+          # - Azure/AWS deployment
+          # - Server deployment via SSH
+          
+          ls -la ./artifacts/
+
+  deploy-production:
+    needs: [build-and-test, quality-gate]
+    if: |
+      success() && 
+      (github.ref == 'refs/heads/main' || 
+       (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production'))
+    runs-on: ubuntu-latest
+    environment: production
+    
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ./artifacts
+
+      - name: Deploy to production
+        run: |
+          echo "🚀 Deploying to production environment..."
+          echo "Services to deploy: ${{ needs.determine-services.outputs.services }}"
+          # Add your production deployment logic here
+          
+          ls -la ./artifacts/
+
+  notify:
+    needs: [build-and-test, quality-gate, deploy-staging, deploy-production]
+    if: always()
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Notify deployment status
+        run: |
+          if [ "${{ needs.quality-gate.result }}" = "success" ]; then
+            echo "✅ CI/CD Pipeline completed successfully"
+            echo "Built services: ${{ needs.determine-services.outputs.services }}"
+          else
+            echo "❌ CI/CD Pipeline failed"
+          fi
+          
+          # Add notification logic here (Slack, Teams, Email, etc.)

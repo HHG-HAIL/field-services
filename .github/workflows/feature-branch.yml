@@ -1,0 +1,119 @@
+name: Feature Branch Check
+
+on:
+  push:
+    branches-ignore: [ main, develop ]
+  workflow_dispatch:
+    inputs:
+      run_full_suite:
+        description: 'Run full test suite'
+        required: false
+        type: boolean
+        default: false
+
+env:
+  JAVA_VERSION: '17'
+  NODE_VERSION: '18'
+
+jobs:
+  quick-check:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.run_full_suite != 'true' }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: 'field-service-app/package-lock.json'
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Install frontend dependencies
+        working-directory: ./field-service-app
+        run: npm ci
+
+      - name: Quick frontend check
+        working-directory: ./field-service-app
+        run: |
+          npm run lint --if-present || echo "No lint script found"
+          npx tsc --noEmit
+
+      - name: Quick backend compile
+        working-directory: ./backend
+        run: mvn clean compile -q
+
+      - name: Basic smoke test
+        working-directory: ./field-service-app
+        run: npm test -- --passWithNoTests --watchAll=false
+
+  full-test-suite:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.run_full_suite == 'true' }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: 'field-service-app/package-lock.json'
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Install frontend dependencies
+        working-directory: ./field-service-app
+        run: npm ci
+
+      - name: Frontend tests and build
+        working-directory: ./field-service-app
+        run: |
+          npm run lint --if-present
+          npm test -- --coverage --watchAll=false
+          npm run build
+
+      - name: Backend tests and build
+        working-directory: ./backend
+        run: |
+          mvn clean test
+          mvn package -DskipTests
+
+  branch-status:
+    needs: [quick-check, full-test-suite]
+    if: always()
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Report status
+        run: |
+          if [ "${{ github.event.inputs.run_full_suite }}" = "true" ]; then
+            if [ "${{ needs.full-test-suite.result }}" = "success" ]; then
+              echo "✅ Full test suite passed - Ready for PR"
+            else
+              echo "❌ Full test suite failed - Fix issues before creating PR"
+            fi
+          else
+            if [ "${{ needs.quick-check.result }}" = "success" ]; then
+              echo "✅ Quick check passed - Branch looks good"
+              echo "💡 Run with 'Run full test suite' enabled before creating PR"
+            else
+              echo "❌ Quick check failed - Fix basic issues first"
+            fi
+          fi

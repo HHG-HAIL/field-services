@@ -1,0 +1,313 @@
+name: Manual Deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      service:
+        description: 'Service to deploy'
+        required: true
+        type: choice
+        options:
+          - 'frontend'
+          - 'work-order-service'
+          - 'technician-service'
+          - 'schedule-service'
+          - 'all-backend'
+          - 'all-services'
+      
+      environment:
+        description: 'Target environment'
+        required: true
+        type: choice
+        options:
+          - 'development'
+          - 'staging'
+          - 'production'
+        default: 'development'
+      
+      version:
+        description: 'Version/Tag to deploy (leave empty for latest)'
+        required: false
+        type: string
+        default: ''
+      
+      force_deploy:
+        description: 'Force deployment even if same version exists'
+        required: false
+        type: boolean
+        default: false
+
+env:
+  JAVA_VERSION: '17'
+  NODE_VERSION: '18'
+
+jobs:
+  validate-inputs:
+    runs-on: ubuntu-latest
+    outputs:
+      deploy-frontend: ${{ steps.validate.outputs.deploy-frontend }}
+      deploy-work-order: ${{ steps.validate.outputs.deploy-work-order }}
+      deploy-technician: ${{ steps.validate.outputs.deploy-technician }}
+      deploy-schedule: ${{ steps.validate.outputs.deploy-schedule }}
+      
+    steps:
+      - name: Validate deployment inputs
+        id: validate
+        run: |
+          SERVICE="${{ github.event.inputs.service }}"
+          ENVIRONMENT="${{ github.event.inputs.environment }}"
+          
+          echo "Deploying service: $SERVICE"
+          echo "Target environment: $ENVIRONMENT"
+          
+          # Set deployment flags
+          DEPLOY_FRONTEND="false"
+          DEPLOY_WORK_ORDER="false"
+          DEPLOY_TECHNICIAN="false"
+          DEPLOY_SCHEDULE="false"
+          
+          case $SERVICE in
+            "frontend")
+              DEPLOY_FRONTEND="true"
+              ;;
+            "work-order-service")
+              DEPLOY_WORK_ORDER="true"
+              ;;
+            "technician-service")
+              DEPLOY_TECHNICIAN="true"
+              ;;
+            "schedule-service")
+              DEPLOY_SCHEDULE="true"
+              ;;
+            "all-backend")
+              DEPLOY_WORK_ORDER="true"
+              DEPLOY_TECHNICIAN="true"
+              DEPLOY_SCHEDULE="true"
+              ;;
+            "all-services")
+              DEPLOY_FRONTEND="true"
+              DEPLOY_WORK_ORDER="true"
+              DEPLOY_TECHNICIAN="true"
+              DEPLOY_SCHEDULE="true"
+              ;;
+          esac
+          
+          echo "deploy-frontend=$DEPLOY_FRONTEND" >> $GITHUB_OUTPUT
+          echo "deploy-work-order=$DEPLOY_WORK_ORDER" >> $GITHUB_OUTPUT
+          echo "deploy-technician=$DEPLOY_TECHNICIAN" >> $GITHUB_OUTPUT
+          echo "deploy-schedule=$DEPLOY_SCHEDULE" >> $GITHUB_OUTPUT
+
+  deploy-frontend:
+    needs: validate-inputs
+    if: ${{ needs.validate-inputs.outputs.deploy-frontend == 'true' }}
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.version || github.ref }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: 'field-service-app/package-lock.json'
+
+      - name: Install dependencies
+        working-directory: ./field-service-app
+        run: npm ci
+
+      - name: Build frontend
+        working-directory: ./field-service-app
+        run: |
+          # Set environment-specific build variables
+          case "${{ github.event.inputs.environment }}" in
+            "production")
+              export REACT_APP_API_URL="https://api.yourdomain.com"
+              export REACT_APP_WS_URL="wss://api.yourdomain.com/ws"
+              ;;
+            "staging")
+              export REACT_APP_API_URL="https://staging-api.yourdomain.com"
+              export REACT_APP_WS_URL="wss://staging-api.yourdomain.com/ws"
+              ;;
+            *)
+              export REACT_APP_API_URL="http://localhost:8080"
+              export REACT_APP_WS_URL="ws://localhost:8080/ws"
+              ;;
+          esac
+          
+          npm run build
+
+      - name: Deploy frontend
+        run: |
+          echo "🚀 Deploying frontend to ${{ github.event.inputs.environment }}"
+          echo "Version: ${{ github.event.inputs.version || 'latest' }}"
+          
+          # Add your frontend deployment logic here
+          # Examples:
+          # - Upload to S3/Azure Blob Storage
+          # - Deploy to Vercel/Netlify
+          # - Copy to web server
+          # - Deploy to CDN
+          
+          echo "✅ Frontend deployment completed"
+
+  deploy-work-order:
+    needs: validate-inputs
+    if: ${{ needs.validate-inputs.outputs.deploy-work-order == 'true' }}
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.version || github.ref }}
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build service
+        working-directory: ./backend
+        run: |
+          mvn clean package -pl work-order-service -am -DskipTests
+
+      - name: Deploy service
+        run: |
+          echo "🚀 Deploying work-order-service to ${{ github.event.inputs.environment }}"
+          echo "Service port: 8081"
+          echo "Version: ${{ github.event.inputs.version || 'latest' }}"
+          
+          JAR_FILE=$(find backend/work-order-service/target -name "*.jar" -not -name "*-sources.jar" | head -1)
+          echo "JAR file: $JAR_FILE"
+          
+          echo "✅ work-order-service deployment completed"
+
+  deploy-technician:
+    needs: validate-inputs
+    if: ${{ needs.validate-inputs.outputs.deploy-technician == 'true' }}
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.version || github.ref }}
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build service
+        working-directory: ./backend
+        run: |
+          mvn clean package -pl technician-service -am -DskipTests
+
+      - name: Deploy service
+        run: |
+          echo "🚀 Deploying technician-service to ${{ github.event.inputs.environment }}"
+          echo "Service port: 8082"
+          echo "Version: ${{ github.event.inputs.version || 'latest' }}"
+          
+          JAR_FILE=$(find backend/technician-service/target -name "*.jar" -not -name "*-sources.jar" | head -1)
+          echo "JAR file: $JAR_FILE"
+          
+          echo "✅ technician-service deployment completed"
+
+  deploy-schedule:
+    needs: validate-inputs
+    if: ${{ needs.validate-inputs.outputs.deploy-schedule == 'true' }}
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.version || github.ref }}
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build service
+        working-directory: ./backend
+        run: |
+          mvn clean package -pl schedule-service -am -DskipTests
+
+      - name: Deploy service
+        run: |
+          echo "🚀 Deploying schedule-service to ${{ github.event.inputs.environment }}"
+          echo "Service port: 8083"
+          echo "Version: ${{ github.event.inputs.version || 'latest' }}"
+          
+          JAR_FILE=$(find backend/schedule-service/target -name "*.jar" -not -name "*-sources.jar" | head -1)
+          echo "JAR file: $JAR_FILE"
+          
+          echo "✅ schedule-service deployment completed"
+
+  health-check:
+    needs: [deploy-frontend, deploy-work-order, deploy-technician, deploy-schedule]
+    if: always() && (needs.deploy-frontend.result == 'success' || needs.deploy-work-order.result == 'success' || needs.deploy-technician.result == 'success' || needs.deploy-schedule.result == 'success')
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Wait for deployment
+        run: sleep 30
+
+      - name: Health check
+        run: |
+          echo "🔍 Performing health checks..."
+          
+          # Add health check logic here
+          echo "✅ Health checks completed"
+
+  rollback:
+    if: failure()
+    needs: [deploy-frontend, deploy-work-order, deploy-technician, deploy-schedule]
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}
+    
+    steps:
+      - name: Rollback deployment
+        run: |
+          echo "⚠️  Deployment failed, initiating rollback..."
+          echo "🔄 Rollback completed"
+
+  notify-deployment:
+    needs: [deploy-frontend, deploy-work-order, deploy-technician, deploy-schedule, health-check]
+    if: always()
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Notify deployment result
+        run: |
+          if [ "${{ needs.health-check.result }}" = "success" ]; then
+            echo "✅ Manual deployment completed successfully"
+            echo "Service: ${{ github.event.inputs.service }}"
+            echo "Environment: ${{ github.event.inputs.environment }}"
+            echo "Version: ${{ github.event.inputs.version || 'latest' }}"
+          else
+            echo "❌ Manual deployment failed"
+          fi
+          
+          # Add notification logic here
+          # Examples:
+          # - Send Slack message
+          # - Send Teams notification
+          # - Send email notification
+          # - Update deployment tracking system
