@@ -46,7 +46,14 @@ jobs:
 
       - name: Install frontend dependencies
         working-directory: ./field-service-app
-        run: npm ci
+        run: |
+          if [ -f "package-lock.json" ]; then
+            echo "package-lock.json found, using npm ci"
+            npm ci
+          else
+            echo "package-lock.json not found, using npm install"
+            npm install
+          fi
 
       - name: Quick frontend check
         working-directory: ./field-service-app
@@ -92,7 +99,14 @@ jobs:
 
       - name: Install frontend dependencies
         working-directory: ./field-service-app
-        run: npm ci
+        run: |
+          if [ -f "package-lock.json" ]; then
+            echo "package-lock.json found, using npm ci"
+            npm ci
+          else
+            echo "package-lock.json not found, using npm install"
+            npm install
+          fi
 
       - name: Frontend tests and build
         working-directory: ./field-service-app

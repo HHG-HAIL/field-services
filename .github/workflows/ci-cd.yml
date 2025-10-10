@@ -207,7 +207,14 @@ jobs:
       - name: Install frontend dependencies
         if: ${{ matrix.service == 'frontend' }}
         working-directory: ./field-service-app
-        run: npm ci
+        run: |
+          if [ -f "package-lock.json" ]; then
+            echo "package-lock.json found, using npm ci"
+            npm ci
+          else
+            echo "package-lock.json not found, using npm install"
+            npm install
+          fi
 
       - name: Lint frontend code
         if: ${{ matrix.service == 'frontend' && github.event.inputs.skip_tests != 'true' }}

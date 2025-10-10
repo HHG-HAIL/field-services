@@ -69,7 +69,14 @@ jobs:
 
       - name: Install dependencies
         working-directory: ./field-service-app
-        run: npm ci
+        run: |
+          if [ -f "package-lock.json" ]; then
+            echo "package-lock.json found, using npm ci"
+            npm ci
+          else
+            echo "package-lock.json not found, using npm install"
+            npm install
+          fi
 
       - name: Lint code
         working-directory: ./field-service-app
