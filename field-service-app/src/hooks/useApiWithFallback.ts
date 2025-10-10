@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { workOrderService } from '../services/workOrderService';
 import { technicianService } from '../services/technicianService';
 import { scheduleService } from '../services/scheduleService';
@@ -44,7 +44,7 @@ export const useApiWithFallback = () => {
   };
 
   // Load data from backend or use mock data
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     setLoading(true);
     setError(null);
     
@@ -90,11 +90,11 @@ export const useApiWithFallback = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [loadData]);
 
   // API methods with fallback
   const api = {

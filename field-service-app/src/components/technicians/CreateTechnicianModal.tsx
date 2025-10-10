@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import Button from '../ui/Button';
-import Card from '../ui/Card';
-import { X, MapPin, Phone, Mail, Wrench } from 'lucide-react';
+import { X, MapPin, Mail, Wrench } from 'lucide-react';
 import { Technician } from '../../types';
 
 interface CreateTechnicianModalProps {

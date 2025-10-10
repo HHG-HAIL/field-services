@@ -173,17 +173,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Debug - List repository contents
-        run: |
-          echo "Current working directory:"
-          pwd
-          echo "Repository contents:"
-          ls -la
-          echo "Field service app contents:"
-          ls -la field-service-app/ || echo "field-service-app directory not found"
-          echo "Looking for package.json:"
-          find . -name "package.json" -type f || echo "No package.json files found"
-
       - name: Setup Java (for backend services)
         if: ${{ matrix.service != 'frontend' }}
         uses: actions/setup-java@v4

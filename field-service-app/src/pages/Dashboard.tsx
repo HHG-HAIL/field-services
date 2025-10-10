@@ -39,7 +39,6 @@ const Dashboard: React.FC<DashboardProps> = ({
     const inProgress = workOrders.filter(wo => wo.status === 'in-progress').length;
     const urgent = workOrders.filter(wo => wo.priority === 'urgent' && wo.status !== 'completed').length;
     const availableTechnicians = technicians.filter(t => t.status === 'available').length;
-    const unassigned = workOrders.filter(wo => !wo.technicianId && wo.status !== 'cancelled').length;
 
     switch (userRole) {
       case 'dispatcher':

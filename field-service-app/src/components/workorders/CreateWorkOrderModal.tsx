@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { WorkOrder, Technician, Customer } from '../../types';
 import Button from '../ui/Button';
-import { X, MapPin, Calendar, Clock, User } from 'lucide-react';
+import { X, MapPin, Calendar, User } from 'lucide-react';
 
 interface CreateWorkOrderModalProps {
   isOpen: boolean;
