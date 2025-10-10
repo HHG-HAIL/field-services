@@ -130,19 +130,23 @@ jobs:
           esac
           
           # Create services array for matrix
-          SERVICES="[]"
+          SERVICES_LIST=""
           if [ "$BUILD_FRONTEND" = "true" ]; then
-            SERVICES=$(echo $SERVICES | jq '. + ["frontend"]')
+            SERVICES_LIST="${SERVICES_LIST}\"frontend\","
           fi
           if [ "$BUILD_WORK_ORDER" = "true" ]; then
-            SERVICES=$(echo $SERVICES | jq '. + ["work-order-service"]')
+            SERVICES_LIST="${SERVICES_LIST}\"work-order-service\","
           fi
           if [ "$BUILD_TECHNICIAN" = "true" ]; then
-            SERVICES=$(echo $SERVICES | jq '. + ["technician-service"]')
+            SERVICES_LIST="${SERVICES_LIST}\"technician-service\","
           fi
           if [ "$BUILD_SCHEDULE" = "true" ]; then
-            SERVICES=$(echo $SERVICES | jq '. + ["schedule-service"]')
+            SERVICES_LIST="${SERVICES_LIST}\"schedule-service\","
           fi
+          
+          # Remove trailing comma and wrap in brackets
+          SERVICES_LIST=$(echo "$SERVICES_LIST" | sed 's/,$//')
+          SERVICES="[$SERVICES_LIST]"
           
           echo "services=$SERVICES" >> $GITHUB_OUTPUT
           echo "build-frontend=$BUILD_FRONTEND" >> $GITHUB_OUTPUT
@@ -151,6 +155,10 @@ jobs:
           echo "build-schedule=$BUILD_SCHEDULE" >> $GITHUB_OUTPUT
           
           echo "Services to build: $SERVICES"
+          echo "Frontend: $BUILD_FRONTEND"
+          echo "Work Order: $BUILD_WORK_ORDER" 
+          echo "Technician: $BUILD_TECHNICIAN"
+          echo "Schedule: $BUILD_SCHEDULE"
 
   build-and-test:
     needs: determine-services
@@ -305,7 +313,7 @@ jobs:
       - name: Deploy to staging
         run: |
           echo "🚀 Deploying to staging environment..."
-          echo "Services to deploy: ${{ needs.determine-services.outputs.services }}"
+          echo "Services to deploy based on selection"
           # Add your staging deployment logic here
           # This could include:
           # - Docker image building and pushing
@@ -333,7 +341,7 @@ jobs:
       - name: Deploy to production
         run: |
           echo "🚀 Deploying to production environment..."
-          echo "Services to deploy: ${{ needs.determine-services.outputs.services }}"
+          echo "Services to deploy based on selection"
           # Add your production deployment logic here
           
           ls -la ./artifacts/
@@ -348,7 +356,7 @@ jobs:
         run: |
           if [ "${{ needs.quality-gate.result }}" = "success" ]; then
             echo "✅ CI/CD Pipeline completed successfully"
-            echo "Built services: ${{ needs.determine-services.outputs.services }}"
+            echo "Built services based on user selection"
           else
             echo "❌ CI/CD Pipeline failed"
           fi
