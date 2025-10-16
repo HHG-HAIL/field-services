@@ -13,182 +13,150 @@ interface TechnicianCardProps {
   workOrderCount?: number;
 }
 
+const skillColors: Record<string, string> = {
+  HVAC: 'bg-sky-100 text-sky-700 border border-sky-200 dark:bg-sky-500/15 dark:text-sky-200 dark:border-sky-400/40',
+  Electrical: 'bg-amber-100 text-amber-700 border border-amber-200 dark:bg-amber-500/15 dark:text-amber-200 dark:border-amber-400/40',
+  Plumbing: 'bg-cyan-100 text-cyan-700 border border-cyan-200 dark:bg-cyan-500/15 dark:text-cyan-200 dark:border-cyan-400/40',
+  'Security Systems': 'bg-purple-100 text-purple-700 border border-purple-200 dark:bg-purple-500/15 dark:text-purple-200 dark:border-purple-400/40',
+  Mechanical: 'bg-emerald-100 text-emerald-700 border border-emerald-200 dark:bg-emerald-500/15 dark:text-emerald-200 dark:border-emerald-400/40',
+  'General Maintenance': 'bg-slate-100 text-slate-700 border border-slate-200 dark:bg-slate-800/70 dark:text-slate-200 dark:border-slate-700',
+  'Network Installation': 'bg-indigo-100 text-indigo-700 border border-indigo-200 dark:bg-indigo-500/15 dark:text-indigo-200 dark:border-indigo-400/40',
+  'Hardware Repair': 'bg-primary-100 text-primary-700 border border-primary-200 dark:bg-primary-500/15 dark:text-primary-200 dark:border-primary-400/40',
+};
+
 const TechnicianCard: React.FC<TechnicianCardProps> = ({
   technician,
   onAssignToWorkOrder,
   onUpdateStatus,
   showActions = true,
-  workOrderCount = 0
+  workOrderCount = 0,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const getStatusColor = (status: Technician['status']) => {
-    switch (status) {
-      case 'available':
-        return 'text-green-600 bg-green-50';
-      case 'busy':
-        return 'text-yellow-600 bg-yellow-50';
-      case 'offline':
-        return 'text-gray-600 bg-gray-50';
-      default:
-        return 'text-gray-600 bg-gray-50';
-    }
-  };
+  const avatarInitials = technician.name
+    .split(' ')
+    .map((n) => n[0])
+    .join('');
 
-  const getSkillBadge = (skill: string) => {
-    const colors: Record<string, string> = {
-      'HVAC': 'bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800 border border-blue-300',
-      'Electrical': 'bg-gradient-to-r from-warning-100 to-warning-200 text-warning-800 border border-warning-300',
-      'Plumbing': 'bg-gradient-to-r from-cyan-100 to-cyan-200 text-cyan-800 border border-cyan-300',
-      'Security Systems': 'bg-gradient-to-r from-secondary-100 to-secondary-200 text-secondary-800 border border-secondary-300',
-      'Mechanical': 'bg-gradient-to-r from-emerald-100 to-emerald-200 text-emerald-800 border border-emerald-300',
-      'General Maintenance': 'bg-gradient-to-r from-gray-100 to-gray-200 text-gray-800 border border-gray-300',
-      'Network Installation': 'bg-gradient-to-r from-indigo-100 to-indigo-200 text-indigo-800 border border-indigo-300',
-      'Hardware Repair': 'bg-gradient-to-r from-primary-100 to-primary-200 text-primary-800 border border-primary-300'
-    };
-    
-    return colors[skill] || 'bg-gradient-to-r from-gray-100 to-gray-200 text-gray-800 border border-gray-300';
-  };
+  const activeJobs = technician.activeWorkOrders?.length ?? workOrderCount;
+
+  const renderSkillPills = () =>
+    (technician.skills || []).slice(0, isExpanded ? undefined : 3).map((skill) => (
+      <span
+        key={skill}
+        className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium shadow-sm transition-colors ${skillColors[skill] || skillColors['General Maintenance']}`}
+      >
+        {skill}
+      </span>
+    ));
 
   return (
-    <Card className="hover:shadow-xl transition-all duration-300 hover:transform hover:scale-105 border-0 bg-gradient-to-br from-white to-gray-50/50 backdrop-blur-sm overflow-hidden">
+    <Card className="transition-all duration-300 hover:shadow-2xl hover:shadow-primary-500/10">
       <div className="space-y-6">
-        {/* Header */}
         <div className="flex items-start justify-between">
-          <div className="flex items-center space-x-4">
-            <div className="relative">
-              <div className="h-14 w-14 bg-gradient-to-br from-primary-500 to-secondary-600 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg ring-2 ring-white/30">
-                {technician.name.split(' ').map(n => n[0]).join('')}
-              </div>
-              {/* Status indicator dot */}
-              <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white shadow-sm ${getStatusColor(technician.status)}`}>
-                <div className="w-full h-full rounded-full bg-current animate-pulse"></div>
-              </div>
+          <div className="flex items-center gap-4">
+            <div className="relative flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-primary-500 to-secondary-500 text-lg font-semibold text-white shadow-lg shadow-primary-500/30">
+              {avatarInitials}
+              <span className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full border-2 border-white bg-emerald-500 text-[0.5rem] text-white dark:border-slate-900">
+                {technician.status === 'available' ? '●' : technician.status === 'busy' ? '◐' : '○'}
+              </span>
             </div>
-            <div className="flex-1">
-              <h3 className="text-lg font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+            <div>
+              <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-50">
                 {technician.name}
               </h3>
               <StatusBadge status={technician.status} className="mt-1" />
             </div>
           </div>
-          
-          {/* Quick stats */}
+
           <div className="text-right">
-            <div className="text-2xl font-bold text-primary-600">
-              {(technician.activeWorkOrders || []).length}
-            </div>
-            <div className="text-xs text-gray-500 font-medium">Active Jobs</div>
+            <div className="text-2xl font-semibold text-primary-600 dark:text-primary-300">{activeJobs}</div>
+            <div className="text-xs font-medium text-slate-500 dark:text-slate-400">Active jobs</div>
           </div>
         </div>
 
-        {/* Skills & Info Section */}
-        <div className="space-y-4">
-          {/* Skills */}
+        <div className="space-y-4 text-sm text-slate-600 dark:text-slate-300">
           <div>
-            <div className="flex items-center justify-between mb-3">
-              <h4 className="text-sm font-semibold text-gray-700 flex items-center">
-                <Wrench className="h-4 w-4 mr-2 text-primary-500" />
+            <div className="mb-3 flex items-center justify-between">
+              <h4 className="flex items-center text-sm font-semibold text-slate-700 dark:text-slate-200">
+                <Wrench className="mr-2 h-4 w-4 text-primary-500" />
                 Skills ({(technician.skills || []).length})
               </h4>
               {(technician.skills || []).length > 3 && (
                 <button
-                  onClick={() => setIsExpanded(!isExpanded)}
-                  className="text-xs text-primary-600 hover:text-primary-800 font-medium transition-colors"
+                  onClick={() => setIsExpanded((prev) => !prev)}
+                  className="text-xs font-medium text-primary-600 transition hover:text-primary-500 dark:text-primary-300 dark:hover:text-primary-200"
                 >
-                  {isExpanded ? 'Show Less' : 'Show All'}
+                  {isExpanded ? 'Show less' : 'Show all'}
                 </button>
               )}
             </div>
             <div className="flex flex-wrap gap-2">
-              {(technician.skills || []).slice(0, isExpanded ? undefined : 3).map((skill) => (
-                <span
-                  key={skill}
-                  className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium shadow-sm transition-all hover:scale-105 ${getSkillBadge(skill)}`}
-                >
-                  {skill}
-                </span>
-              ))}
+              {renderSkillPills()}
               {(technician.skills || []).length > 3 && !isExpanded && (
-                <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-gradient-to-r from-gray-100 to-gray-200 text-gray-600 border border-gray-300">
+                <span className="inline-flex items-center rounded-full bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-500 dark:bg-slate-800/60 dark:text-slate-300">
                   +{(technician.skills || []).length - 3} more
                 </span>
               )}
             </div>
           </div>
-          
-          {/* Quick Stats */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-gradient-to-r from-primary-50 to-blue-50 p-3 rounded-lg border border-primary-200/30">
-              <div className="flex items-center">
-                <Star className="h-4 w-4 mr-2 text-primary-600" />
-                <span className="text-sm font-medium text-primary-700">Experience</span>
+
+          <div className="grid grid-cols-2 gap-4 text-sm">
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-slate-700 dark:bg-slate-900/60">
+              <div className="flex items-center gap-2 text-slate-500 dark:text-slate-300">
+                <Star className="h-4 w-4 text-primary-500" />
+                Experience
               </div>
-              <div className="text-lg font-bold text-primary-800 mt-1">
+              <div className="mt-1 text-lg font-semibold text-slate-900 dark:text-slate-100">
                 {Math.floor(Math.random() * 5) + 3} years
               </div>
             </div>
-            <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-3 rounded-lg border border-green-200/30">
-              <div className="flex items-center">
-                <Wrench className="h-4 w-4 mr-2 text-green-600" />
-                <span className="text-sm font-medium text-green-700">Rating</span>
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-slate-700 dark:bg-slate-900/60">
+              <div className="flex items-center gap-2 text-slate-500 dark:text-slate-300">
+                <Wrench className="h-4 w-4 text-emerald-500" />
+                Rating
               </div>
-              <div className="text-lg font-bold text-green-800 mt-1">
+              <div className="mt-1 text-lg font-semibold text-slate-900 dark:text-slate-100">
                 {(4.2 + Math.random() * 0.8).toFixed(1)}★
               </div>
             </div>
           </div>
         </div>
 
-        {/* Contact Info (Expanded) */}
         {isExpanded && (
-          <div className="space-y-2 pt-2 border-t border-gray-200">
-            <div className="flex items-center text-sm text-gray-600">
-              <Mail className="h-4 w-4 mr-2" />
+          <div className="space-y-2 border-t border-slate-200 pt-3 text-sm text-slate-600 dark:border-slate-700 dark:text-slate-300">
+            <div className="flex items-center gap-2">
+              <Mail className="h-4 w-4 text-slate-400 dark:text-slate-500" />
               <span>{technician.email}</span>
             </div>
-            <div className="flex items-center text-sm text-gray-600">
-              <Phone className="h-4 w-4 mr-2" />
+            <div className="flex items-center gap-2">
+              <Phone className="h-4 w-4 text-slate-400 dark:text-slate-500" />
               <span>{technician.phone}</span>
             </div>
             {technician.currentLocation && (
-              <div className="flex items-center text-sm text-gray-600">
-                <MapPin className="h-4 w-4 mr-2" />
+              <div className="flex items-center gap-2">
+                <MapPin className="h-4 w-4 text-slate-400 dark:text-slate-500" />
                 <span>
-                  {typeof technician.currentLocation === 'string' 
-                    ? technician.currentLocation 
+                  {typeof technician.currentLocation === 'string'
+                    ? technician.currentLocation
                     : technician.currentLocation.lat && technician.currentLocation.lng
-                      ? `${technician.currentLocation.lat.toFixed(4)}, ${technician.currentLocation.lng.toFixed(4)}`
-                      : 'Unknown Location'
-                  }
+                    ? `${technician.currentLocation.lat.toFixed(4)}, ${technician.currentLocation.lng.toFixed(4)}`
+                    : 'Unknown location'}
                 </span>
               </div>
             )}
           </div>
         )}
 
-        {/* Actions */}
         {showActions && (
-          <div className="flex flex-wrap gap-2 pt-2 border-t border-gray-200">
-            {!isExpanded && (
-              <Button
-                size="sm"
-                variant="secondary"
-                onClick={() => setIsExpanded(true)}
-              >
-                View Details
-              </Button>
-            )}
-            
-            {isExpanded && (
-              <Button
-                size="sm"
-                variant="secondary"
-                onClick={() => setIsExpanded(false)}
-              >
-                Hide Details
-              </Button>
-            )}
+          <div className="flex flex-wrap gap-2 border-t border-slate-200 pt-3 dark:border-slate-700">
+            <Button
+              size="sm"
+              variant="secondary"
+              onClick={() => setIsExpanded((prev) => !prev)}
+            >
+              {isExpanded ? 'Hide details' : 'View details'}
+            </Button>
 
             {technician.status === 'available' && onAssignToWorkOrder && (
               <Button
@@ -196,19 +164,19 @@ const TechnicianCard: React.FC<TechnicianCardProps> = ({
                 variant="primary"
                 onClick={() => onAssignToWorkOrder(technician.id)}
               >
-                Assign to Job
+                Assign to job
               </Button>
             )}
 
             {onUpdateStatus && (
-              <div className="flex gap-1">
+              <div className="flex gap-2">
                 {technician.status !== 'available' && (
                   <Button
                     size="sm"
                     variant="success"
                     onClick={() => onUpdateStatus(technician.id, 'available')}
                   >
-                    Mark Available
+                    Mark available
                   </Button>
                 )}
                 {technician.status !== 'offline' && (
@@ -217,7 +185,7 @@ const TechnicianCard: React.FC<TechnicianCardProps> = ({
                     variant="secondary"
                     onClick={() => onUpdateStatus(technician.id, 'offline')}
                   >
-                    Set Offline
+                    Set offline
                   </Button>
                 )}
               </div>

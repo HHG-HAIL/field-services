@@ -188,9 +188,13 @@ jobs:
           cache: maven
 
       - name: Build service
-        working-directory: ./backend
         run: |
-          mvn clean package -pl work-order-service -am -DskipTests
+          if [ ! -d "work-order-service" ]; then
+            echo "work-order-service directory not found."
+            exit 1
+          fi
+          cd work-order-service
+          mvn package -DskipTests
 
       - name: Deploy service
         run: |
@@ -198,7 +202,7 @@ jobs:
           echo "Service port: 8081"
           echo "Version: ${{ github.event.inputs.version || 'latest' }}"
           
-          JAR_FILE=$(find backend/work-order-service/target -name "*.jar" -not -name "*-sources.jar" | head -1)
+          JAR_FILE=$(find work-order-service/target -name "*.jar" -not -name "*-sources.jar" | head -1)
           echo "JAR file: $JAR_FILE"
           
           echo "✅ work-order-service deployment completed"
@@ -223,9 +227,13 @@ jobs:
           cache: maven
 
       - name: Build service
-        working-directory: ./backend
         run: |
-          mvn clean package -pl technician-service -am -DskipTests
+          if [ ! -d "technician-service" ]; then
+            echo "technician-service directory not found."
+            exit 1
+          fi
+          cd technician-service
+          mvn package -DskipTests
 
       - name: Deploy service
         run: |
@@ -233,7 +241,7 @@ jobs:
           echo "Service port: 8082"
           echo "Version: ${{ github.event.inputs.version || 'latest' }}"
           
-          JAR_FILE=$(find backend/technician-service/target -name "*.jar" -not -name "*-sources.jar" | head -1)
+          JAR_FILE=$(find technician-service/target -name "*.jar" -not -name "*-sources.jar" | head -1)
           echo "JAR file: $JAR_FILE"
           
           echo "✅ technician-service deployment completed"
@@ -258,9 +266,13 @@ jobs:
           cache: maven
 
       - name: Build service
-        working-directory: ./backend
         run: |
-          mvn clean package -pl schedule-service -am -DskipTests
+          if [ ! -d "schedule-service" ]; then
+            echo "schedule-service directory not found."
+            exit 1
+          fi
+          cd schedule-service
+          mvn package -DskipTests
 
       - name: Deploy service
         run: |
@@ -268,7 +280,7 @@ jobs:
           echo "Service port: 8083"
           echo "Version: ${{ github.event.inputs.version || 'latest' }}"
           
-          JAR_FILE=$(find backend/schedule-service/target -name "*.jar" -not -name "*-sources.jar" | head -1)
+          JAR_FILE=$(find schedule-service/target -name "*.jar" -not -name "*-sources.jar" | head -1)
           echo "JAR file: $JAR_FILE"
           
           echo "✅ schedule-service deployment completed"

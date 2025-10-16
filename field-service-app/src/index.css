@@ -2,18 +2,84 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 25%, #fdf4ff 50%, #f0fdf4 75%, #fffbeb 100%);
-  min-height: 100vh;
+@layer base {
+  :root {
+    --app-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    --app-bg-gradient: radial-gradient(circle at 15% 15%, rgba(14, 165, 233, 0.25), transparent 45%),
+      radial-gradient(circle at 85% 10%, rgba(217, 70, 239, 0.18), transparent 46%),
+      radial-gradient(circle at 50% 90%, rgba(16, 185, 129, 0.16), transparent 55%),
+      #f8fafc;
+    --app-surface: rgba(255, 255, 255, 0.88);
+    --app-surface-muted: rgba(255, 255, 255, 0.72);
+    --app-border: rgba(15, 23, 42, 0.08);
+    --app-ring: rgba(14, 165, 233, 0.35);
+    --app-text: #0f172a;
+    --app-text-muted: #475569;
+    --app-scroll-track: #e2e8f0;
+    --app-scroll-thumb: linear-gradient(to bottom, #0ea5e9, #0284c7);
+    color-scheme: light;
+  }
+
+  .dark {
+    --app-bg-gradient: radial-gradient(circle at 10% 10%, rgba(14, 165, 233, 0.12), transparent 45%),
+      radial-gradient(circle at 90% 15%, rgba(217, 70, 239, 0.12), transparent 48%),
+      radial-gradient(circle at 40% 90%, rgba(16, 185, 129, 0.08), transparent 55%),
+      #0f172a;
+    --app-surface: rgba(15, 23, 42, 0.82);
+    --app-surface-muted: rgba(15, 23, 42, 0.68);
+    --app-border: rgba(148, 163, 184, 0.2);
+    --app-ring: rgba(99, 102, 241, 0.35);
+    --app-text: #e2e8f0;
+    --app-text-muted: #94a3b8;
+    --app-scroll-track: #1e293b;
+    --app-scroll-thumb: linear-gradient(to bottom, #0369a1, #1d4ed8);
+    color-scheme: dark;
+  }
+
+  body {
+    margin: 0;
+    font-family: var(--app-font-family);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background: var(--app-bg-gradient);
+    color: var(--app-text);
+    min-height: 100vh;
+    transition: background 0.5s ease, color 0.3s ease;
+  }
 }
 
-/* Add custom animations */
+/* Custom utility classes */
+@layer components {
+  .bg-app-gradient {
+    background: var(--app-bg-gradient);
+  }
+
+  .surface-card {
+    background-color: var(--app-surface);
+    border: 1px solid var(--app-border);
+    backdrop-filter: blur(18px);
+  }
+
+  .surface-muted {
+    background-color: var(--app-surface-muted);
+    border: 1px solid var(--app-border);
+    backdrop-filter: blur(12px);
+  }
+
+  .text-theme-primary {
+    color: var(--app-text);
+  }
+
+  .text-theme-muted {
+    color: var(--app-text-muted);
+  }
+
+  .ring-theme {
+    box-shadow: 0 0 0 4px var(--app-ring);
+  }
+}
+
 @layer utilities {
   .animate-float {
     animation: float 6s ease-in-out infinite;
@@ -21,6 +87,10 @@ body {
   
   .animate-pulse-slow {
     animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  .animate-slide-in-right {
+    animation: slide-in-right 220ms ease-out;
   }
 }
 
@@ -33,17 +103,28 @@ body {
   }
 }
 
+@keyframes slide-in-right {
+  from {
+    transform: translateX(16px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: linear-gradient(to bottom, #f1f5f9, #e2e8f0);
+  background: var(--app-scroll-track);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(to bottom, #0ea5e9, #0284c7);
+  background: var(--app-scroll-thumb);
   border-radius: 4px;
 }
 

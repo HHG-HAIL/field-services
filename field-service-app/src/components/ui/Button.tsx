@@ -16,17 +16,17 @@ const Button: React.FC<ButtonProps> = ({
   const getVariantStyles = () => {
     switch (variant) {
       case 'primary':
-        return 'bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white border-transparent shadow-lg hover:shadow-xl transform hover:scale-105';
+        return 'bg-primary-600 hover:bg-primary-500 text-white border-transparent shadow-md shadow-primary-500/30 dark:bg-primary-500 dark:hover:bg-primary-400';
       case 'secondary':
-        return 'bg-gradient-to-r from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-300 text-gray-900 border-gray-300 shadow-md hover:shadow-lg transform hover:scale-105';
+        return 'bg-white/80 text-slate-700 border border-slate-200 hover:bg-white shadow-sm hover:shadow-md dark:bg-slate-900/70 dark:text-slate-200 dark:border-slate-700 dark:hover:bg-slate-900';
       case 'success':
-        return 'bg-gradient-to-r from-success-600 to-emerald-600 hover:from-success-700 hover:to-emerald-700 text-white border-transparent shadow-lg hover:shadow-xl transform hover:scale-105';
+        return 'bg-emerald-600 hover:bg-emerald-500 text-white border-transparent shadow-md shadow-emerald-500/20 dark:bg-emerald-500 dark:hover:bg-emerald-400';
       case 'warning':
-        return 'bg-gradient-to-r from-warning-500 to-warning-600 hover:from-warning-600 hover:to-warning-700 text-white border-transparent shadow-lg hover:shadow-xl transform hover:scale-105';
+        return 'bg-amber-500 hover:bg-amber-400 text-white border-transparent shadow-md shadow-amber-500/30 dark:bg-amber-500 dark:hover:bg-amber-400';
       case 'danger':
-        return 'bg-gradient-to-r from-danger-600 to-danger-700 hover:from-danger-700 hover:to-danger-800 text-white border-transparent shadow-lg hover:shadow-xl transform hover:scale-105';
+        return 'bg-danger-600 hover:bg-danger-500 text-white border-transparent shadow-md shadow-danger-500/30 dark:bg-danger-500 dark:hover:bg-danger-400';
       default:
-        return 'bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white border-transparent shadow-lg hover:shadow-xl transform hover:scale-105';
+        return 'bg-primary-600 hover:bg-primary-500 text-white border-transparent shadow-md shadow-primary-500/30 dark:bg-primary-500 dark:hover:bg-primary-400';
     }
   };
 
@@ -45,7 +45,7 @@ const Button: React.FC<ButtonProps> = ({
 
   return (
     <button
-      className={`inline-flex items-center justify-center border font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all duration-200 ${getVariantStyles()} ${getSizeStyles()} ${className}`}
+      className={`inline-flex items-center justify-center rounded-lg font-medium transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-slate-900 ${getVariantStyles()} ${getSizeStyles()} ${className}`}
       {...props}
     >
       {children}

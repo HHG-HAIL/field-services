@@ -1,43 +1,43 @@
 import React from 'react';
 
 interface StatusBadgeProps {
-  status: string; // Allow any string to handle unknown values gracefully
+  status: string;
   className?: string;
 }
 
 const StatusBadge: React.FC<StatusBadgeProps> = ({ status, className = '' }) => {
-  const getStatusStyles = () => {
-    const normalizedStatus = status?.toLowerCase()?.trim();
+  const normalizedStatus = status?.toLowerCase()?.trim();
+
+  const styles = (() => {
     switch (normalizedStatus) {
       case 'pending':
-        return 'bg-gradient-to-r from-slate-100 to-slate-200 text-slate-800 border-slate-300 shadow-md ring-1 ring-slate-200';
+        return 'bg-slate-100 text-slate-700 border border-slate-200 dark:bg-slate-800/70 dark:text-slate-200 dark:border-slate-700';
       case 'completed':
-        return 'bg-gradient-to-r from-emerald-100 via-green-100 to-emerald-200 text-emerald-800 border-emerald-300 shadow-md ring-1 ring-emerald-200';
+        return 'bg-emerald-100 text-emerald-700 border border-emerald-200 dark:bg-emerald-500/15 dark:text-emerald-200 dark:border-emerald-400/40';
       case 'in-progress':
       case 'inprogress':
       case 'in_progress':
-        return 'bg-gradient-to-r from-blue-100 via-sky-100 to-blue-200 text-blue-800 border-blue-300 shadow-md ring-1 ring-blue-200';
+        return 'bg-sky-100 text-sky-700 border border-sky-200 dark:bg-sky-500/15 dark:text-sky-200 dark:border-sky-400/40';
       case 'assigned':
-        return 'bg-gradient-to-r from-amber-100 via-yellow-100 to-amber-200 text-amber-800 border-amber-300 shadow-md ring-1 ring-amber-200';
+        return 'bg-amber-100 text-amber-700 border border-amber-200 dark:bg-amber-500/15 dark:text-amber-200 dark:border-amber-400/40';
       case 'cancelled':
-        return 'bg-gradient-to-r from-red-100 via-rose-100 to-red-200 text-red-800 border-red-300 shadow-md ring-1 ring-red-200';
+        return 'bg-rose-100 text-rose-700 border border-rose-200 dark:bg-rose-500/15 dark:text-rose-200 dark:border-rose-400/40';
       case 'available':
-        return 'bg-gradient-to-r from-green-100 via-emerald-100 to-green-200 text-green-800 border-green-300 shadow-md ring-1 ring-green-200';
+        return 'bg-emerald-100 text-emerald-700 border border-emerald-200 dark:bg-emerald-500/15 dark:text-emerald-200 dark:border-emerald-400/40';
       case 'busy':
-        return 'bg-gradient-to-r from-orange-100 via-amber-100 to-orange-200 text-orange-800 border-orange-300 shadow-md ring-1 ring-orange-200';
+        return 'bg-orange-100 text-orange-700 border border-orange-200 dark:bg-orange-500/15 dark:text-orange-200 dark:border-orange-400/40';
       case 'offline':
-        return 'bg-gradient-to-r from-gray-100 via-slate-100 to-gray-200 text-gray-700 border-gray-300 shadow-md ring-1 ring-gray-200';
+        return 'bg-slate-100 text-slate-600 border border-slate-200 dark:bg-slate-900/70 dark:text-slate-300 dark:border-slate-800';
       case 'on-break':
       case 'onbreak':
       case 'on_break':
-        return 'bg-gradient-to-r from-purple-100 via-violet-100 to-purple-200 text-purple-800 border-purple-300 shadow-md ring-1 ring-purple-200';
+        return 'bg-violet-100 text-violet-700 border border-violet-200 dark:bg-violet-500/15 dark:text-violet-200 dark:border-violet-400/40';
       default:
-        return 'bg-gradient-to-r from-gray-100 via-slate-100 to-gray-200 text-gray-700 border-gray-300 shadow-md ring-1 ring-gray-200';
+        return 'bg-slate-100 text-slate-700 border border-slate-200 dark:bg-slate-800/70 dark:text-slate-200 dark:border-slate-700';
     }
-  };
+  })();
 
-  const getStatusIcon = () => {
-    const normalizedStatus = status?.toLowerCase()?.trim();
+  const icon = (() => {
     switch (normalizedStatus) {
       case 'pending':
         return '⏳';
@@ -50,7 +50,7 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({ status, className = '' }) => 
       case 'assigned':
         return '📋';
       case 'cancelled':
-        return '❌';
+        return '✖️';
       case 'available':
         return '🟢';
       case 'busy':
@@ -62,12 +62,11 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({ status, className = '' }) => 
       case 'on_break':
         return '☕';
       default:
-        return '❓';
+        return '•';
     }
-  };
+  })();
 
-  const getStatusLabel = () => {
-    const normalizedStatus = status?.toLowerCase()?.trim();
+  const label = (() => {
     switch (normalizedStatus) {
       case 'pending':
         return 'PENDING';
@@ -94,13 +93,17 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({ status, className = '' }) => 
       default:
         return status?.toUpperCase() || 'UNKNOWN';
     }
-  };
+  })();
+
   return (
-    <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold border ${getStatusStyles()} transform hover:scale-105 transition-all duration-200 ${className}`}>
-      <span className="mr-1.5 text-sm">{getStatusIcon()}</span>
-      {getStatusLabel()}
+    <span
+      className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold shadow-sm transition-colors ${styles} ${className}`}
+    >
+      <span className="text-sm leading-none">{icon}</span>
+      {label}
     </span>
   );
 };
 
 export default StatusBadge;
+

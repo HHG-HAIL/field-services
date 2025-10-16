@@ -47,6 +47,9 @@ on:
     branches: [ main, develop ]
     paths:
       - 'backend/**'
+      - 'work-order-service/**'
+      - 'technician-service/**'
+      - 'schedule-service/**'
       - 'field-service-app/**'
       - '.github/workflows/**'
 
@@ -54,6 +57,9 @@ on:
     branches: [ main, develop ]
     paths:
       - 'backend/**'
+      - 'work-order-service/**'
+      - 'technician-service/**'
+      - 'schedule-service/**'
       - 'field-service-app/**'
       - '.github/workflows/**'
 
@@ -238,15 +244,25 @@ jobs:
 
       - name: Test backend service
         if: ${{ matrix.service != 'frontend' && github.event.inputs.skip_tests != 'true' }}
-        working-directory: ./backend
         run: |
-          mvn clean test -pl ${{ matrix.service }} -am
+          SERVICE_DIR="${{ matrix.service }}"
+          if [ ! -d "$SERVICE_DIR" ]; then
+            echo "Directory $SERVICE_DIR not found. Skipping tests."
+            exit 0
+          fi
+          cd "$SERVICE_DIR"
+          mvn test
 
       - name: Build backend service
         if: ${{ matrix.service != 'frontend' }}
-        working-directory: ./backend
         run: |
-          mvn clean package -pl ${{ matrix.service }} -am -DskipTests
+          SERVICE_DIR="${{ matrix.service }}"
+          if [ ! -d "$SERVICE_DIR" ]; then
+            echo "Directory $SERVICE_DIR not found. Skipping build."
+            exit 0
+          fi
+          cd "$SERVICE_DIR"
+          mvn package -DskipTests
 
       - name: Upload frontend build artifacts
         if: ${{ matrix.service == 'frontend' }}
@@ -261,8 +277,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.service }}-jar
-          path: backend/${{ matrix.service }}/target/*.jar
+          path: ${{ matrix.service }}/target/*.jar
           retention-days: 30
+          if-no-files-found: ignore
 
       - name: Upload test results
         if: ${{ github.event.inputs.skip_tests != 'true' }}
@@ -271,8 +288,11 @@ jobs:
           name: test-results-${{ matrix.service }}
           path: |
             field-service-app/coverage/
-            backend/**/target/surefire-reports/
+            work-order-service/target/surefire-reports/
+            technician-service/target/surefire-reports/
+            schedule-service/target/surefire-reports/
           retention-days: 7
+          if-no-files-found: ignore
         continue-on-error: true
 
   security-scan:

@@ -15,9 +15,10 @@ import { UserRole } from '../../types';
 
 interface NavigationProps {
   userRole: UserRole;
+  onOpenSettings: () => void;
 }
 
-const Navigation: React.FC<NavigationProps> = ({ userRole }) => {
+const Navigation: React.FC<NavigationProps> = ({ userRole, onOpenSettings }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const getNavigationItems = () => {
@@ -65,48 +66,59 @@ const Navigation: React.FC<NavigationProps> = ({ userRole }) => {
       <div className="lg:hidden fixed top-4 left-4 z-50">
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="bg-white p-2 rounded-md shadow-md"
+          className="flex items-center justify-center rounded-xl bg-white/90 text-slate-700 shadow-lg shadow-slate-900/10 backdrop-blur-md transition hover:shadow-xl hover:text-primary-600 dark:bg-slate-950/80 dark:text-slate-200 dark:hover:text-primary-300"
         >
-          {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
         </button>
       </div>
 
       {/* Sidebar */}
-      <nav className={`fixed inset-y-0 left-0 z-40 w-64 bg-gradient-to-b from-gray-900 via-indigo-900 to-primary-900 text-white transform transition-transform duration-300 ease-in-out ${
-        isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
-      } lg:translate-x-0 shadow-2xl`}>
-        <div className="flex items-center justify-center h-16 bg-gradient-to-r from-primary-800 to-secondary-800 border-b border-primary-700 shadow-lg">
-          <h1 className="text-xl font-bold bg-gradient-to-r from-white to-indigo-200 bg-clip-text text-transparent">Field Service</h1>
-        </div>
-        
-        <div className="mt-8">
-          {navigationItems.map((item) => {
-            const Icon = item.icon;
-            return (
-              <NavLink
-                key={item.name}
-                to={item.href}
-                className={({ isActive }) =>
-                  `flex items-center px-6 py-3 text-sm font-medium transition-all duration-200 ${
-                    isActive
-                      ? 'bg-gradient-to-r from-primary-600 to-secondary-600 text-white border-r-4 border-emerald-400 shadow-lg transform scale-105'
-                      : 'text-gray-300 hover:bg-gradient-to-r hover:from-primary-700/50 hover:to-secondary-700/50 hover:text-white hover:transform hover:scale-105'
-                  }`
-                }
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                <Icon className="mr-3 h-5 w-5" />
-                {item.name}
-              </NavLink>
-            );
-          })}
-        </div>
+      <nav
+        className={`fixed inset-y-0 left-0 z-40 w-64 transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${
+          isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        <div className="flex h-full flex-col overflow-hidden rounded-r-3xl border-r border-slate-200/70 bg-white/85 shadow-2xl shadow-slate-900/10 backdrop-blur-xl dark:border-slate-800/60 dark:bg-slate-950/80 dark:shadow-slate-950/40">
+          <div className="flex items-center justify-center h-20 border-b border-slate-200/70 bg-white/70 dark:border-slate-800/60 dark:bg-slate-950/60">
+            <h1 className="text-lg font-semibold tracking-wide text-slate-800 dark:text-slate-100">
+              Field Service Control
+            </h1>
+          </div>
 
-        <div className="absolute bottom-0 w-full p-6 border-t border-primary-700/50">
-          <button className="flex items-center w-full px-3 py-2 text-sm text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-primary-700/50 hover:to-secondary-700/50 rounded-md transition-all duration-200 hover:transform hover:scale-105">
-            <Settings className="mr-3 h-5 w-5" />
-            Settings
-          </button>
+          <div className="flex-1 overflow-y-auto py-6 custom-scrollbar px-3">
+            <div className="space-y-2">
+              {navigationItems.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <NavLink
+                    key={item.name}
+                    to={item.href}
+                    className={({ isActive }) =>
+                      `group flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition-all duration-200 ${
+                        isActive
+                          ? 'bg-primary-500/15 text-primary-700 shadow-[0_18px_36px_-18px_rgba(14,165,233,0.8)] ring-1 ring-primary-500/40 dark:bg-primary-500/10 dark:text-primary-200'
+                          : 'text-slate-600 hover:bg-slate-100/80 hover:text-primary-600 dark:text-slate-300 dark:hover:bg-slate-900/60 dark:hover:text-primary-300'
+                      }`
+                    }
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <Icon className="h-5 w-5 shrink-0 transition-transform group-hover:scale-110" />
+                    <span>{item.name}</span>
+                  </NavLink>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="border-t border-slate-200/70 p-4 dark:border-slate-800/60">
+            <button
+              onClick={onOpenSettings}
+              className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium text-slate-600 transition-all duration-200 hover:bg-primary-500/15 hover:text-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-400 dark:text-slate-300 dark:hover:bg-primary-500/10 dark:hover:text-primary-200"
+            >
+              <Settings className="h-5 w-5" />
+              Workspace settings
+            </button>
+          </div>
         </div>
       </nav>
 

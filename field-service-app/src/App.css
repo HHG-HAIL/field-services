@@ -20,17 +20,17 @@
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: var(--app-scroll-track);
   border-radius: 3px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
+  background: var(--app-scroll-thumb);
   border-radius: 3px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #a1a1a1;
+  background: linear-gradient(to bottom, #0284c7, #0369a1);
 }
 
 /* Focus styles for better accessibility */
@@ -41,7 +41,12 @@
 
 /* Loading skeleton styles */
 .loading-skeleton {
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background: linear-gradient(
+    90deg,
+    rgba(148, 163, 184, 0.15) 25%,
+    rgba(148, 163, 184, 0.3) 50%,
+    rgba(148, 163, 184, 0.15) 75%
+  );
   background-size: 200% 100%;
   animation: loading 1.5s infinite;
 }

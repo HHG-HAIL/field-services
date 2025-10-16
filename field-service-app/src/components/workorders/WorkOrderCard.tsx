@@ -57,14 +57,14 @@ const WorkOrderCard: React.FC<WorkOrderCardProps> = ({
   };
 
   return (
-    <Card className="group hover:shadow-xl hover:scale-[1.02] transition-all duration-300 bg-gradient-to-br from-white to-gray-50/50 border-0 shadow-lg backdrop-blur-sm">
-      <div className="space-y-4">
+    <Card className="group transition-all duration-300 hover:shadow-2xl hover:shadow-primary-500/10">
+      <div className="space-y-4 text-slate-700 dark:text-slate-300">
         <div className="flex items-start justify-between">
           <div className="flex-1 min-w-0">
-            <h3 className="text-lg font-semibold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent truncate group-hover:from-primary-600 group-hover:to-secondary-600 transition-all duration-300">
+            <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-50 truncate transition-colors group-hover:text-primary-600 dark:group-hover:text-primary-300">
               {workOrder.title}
             </h3>
-            <p className="text-sm text-gray-600 mt-1 line-clamp-2">
+            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400 line-clamp-2">
               {workOrder.description}
             </p>
           </div>
@@ -74,44 +74,44 @@ const WorkOrderCard: React.FC<WorkOrderCardProps> = ({
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-gray-600">
-          <div className="flex items-center">
-            <div className="bg-gradient-to-br from-primary-100 to-primary-200 p-1.5 rounded-lg mr-2">
-              <User className="h-4 w-4 text-primary-600" />
-            </div>
+        <div className="grid grid-cols-1 gap-4 text-sm sm:grid-cols-2">
+          <div className="flex items-center gap-2">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-100 text-primary-600 dark:bg-primary-500/10 dark:text-primary-300">
+              <User className="h-4 w-4" />
+            </span>
             <span className="truncate">
               {workOrder.technicianName || 'Unassigned'}
             </span>
           </div>
           
-          <div className="flex items-center">
-            <div className="bg-gradient-to-br from-secondary-100 to-secondary-200 p-1.5 rounded-lg mr-2">
-              <Calendar className="h-4 w-4 text-secondary-600" />
-            </div>
+          <div className="flex items-center gap-2">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-secondary-100 text-secondary-600 dark:bg-secondary-500/10 dark:text-secondary-300">
+              <Calendar className="h-4 w-4" />
+            </span>
             <span>{formatDate(workOrder.scheduledDate)}</span>
           </div>
           
-          <div className="flex items-center">
-            <div className="bg-gradient-to-br from-emerald-100 to-emerald-200 p-1.5 rounded-lg mr-2">
-              <MapPin className="h-4 w-4 text-emerald-600" />
-            </div>
+          <div className="flex items-center gap-2">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-100 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-300">
+              <MapPin className="h-4 w-4" />
+            </span>
             <span className="truncate">{workOrder.customerName}</span>
           </div>
           
-          <div className="flex items-center">
-            <div className="bg-gradient-to-br from-indigo-100 to-indigo-200 p-1.5 rounded-lg mr-2">
-              <Clock className="h-4 w-4 text-indigo-600" />
-            </div>
+          <div className="flex items-center gap-2">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-100 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-300">
+              <Clock className="h-4 w-4" />
+            </span>
             <span>{formatDuration(workOrder.estimatedDuration)}</span>
           </div>
         </div>
 
-        <div className="text-xs text-gray-500 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-2">
+        <div className="rounded-lg bg-slate-100/70 p-2 text-xs text-slate-500 dark:bg-slate-900/60 dark:text-slate-400">
           <div className="truncate">{workOrder.location.address}</div>
         </div>
 
         {showActions && (
-          <div className="flex flex-wrap gap-2 pt-4 border-t border-gradient-to-r from-gray-200 to-gray-100">
+          <div className="flex flex-wrap gap-2 border-t border-slate-200/70 pt-4 dark:border-slate-700/60">
             {/* Edit Work Order */}
             {onEditWorkOrder && (
               <Button

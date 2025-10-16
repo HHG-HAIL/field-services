@@ -1,29 +1,29 @@
 import React from 'react';
 
 interface PriorityBadgeProps {
-  priority: string; // Allow any string to handle unknown values gracefully
+  priority: string;
   className?: string;
 }
 
 const PriorityBadge: React.FC<PriorityBadgeProps> = ({ priority, className = '' }) => {
-  const getPriorityStyles = () => {
-    const normalizedPriority = priority?.toLowerCase();
+  const normalizedPriority = priority?.toLowerCase();
+
+  const styles = (() => {
     switch (normalizedPriority) {
       case 'urgent':
-        return 'bg-gradient-to-r from-red-100 via-rose-100 to-red-200 text-red-800 border-2 border-red-300 shadow-lg ring-2 ring-red-200 animate-pulse';
+        return 'bg-rose-100 text-rose-700 border border-rose-200 dark:bg-rose-500/15 dark:text-rose-200 dark:border-rose-400/40';
       case 'high':
-        return 'bg-gradient-to-r from-orange-100 via-amber-100 to-orange-200 text-orange-800 border-2 border-orange-300 shadow-lg ring-1 ring-orange-200';
+        return 'bg-amber-100 text-amber-700 border border-amber-200 dark:bg-amber-500/15 dark:text-amber-200 dark:border-amber-400/40';
       case 'medium':
-        return 'bg-gradient-to-r from-yellow-100 via-amber-100 to-yellow-200 text-yellow-800 border-2 border-yellow-300 shadow-md ring-1 ring-yellow-200';
+        return 'bg-yellow-100 text-yellow-700 border border-yellow-200 dark:bg-yellow-500/15 dark:text-yellow-200 dark:border-yellow-400/40';
       case 'low':
-        return 'bg-gradient-to-r from-green-100 via-emerald-100 to-green-200 text-green-800 border-2 border-green-300 shadow-md ring-1 ring-green-200';
+        return 'bg-emerald-100 text-emerald-700 border border-emerald-200 dark:bg-emerald-500/15 dark:text-emerald-200 dark:border-emerald-400/40';
       default:
-        return 'bg-gradient-to-r from-gray-100 via-slate-100 to-gray-200 text-gray-800 border-2 border-gray-300 shadow-md ring-1 ring-gray-200';
+        return 'bg-slate-100 text-slate-700 border border-slate-200 dark:bg-slate-800/70 dark:text-slate-200 dark:border-slate-700';
     }
-  };
+  })();
 
-  const getPriorityIcon = () => {
-    const normalizedPriority = priority?.toLowerCase();
+  const icon = (() => {
     switch (normalizedPriority) {
       case 'urgent':
         return '🚨';
@@ -34,12 +34,11 @@ const PriorityBadge: React.FC<PriorityBadgeProps> = ({ priority, className = '' 
       case 'low':
         return '🌿';
       default:
-        return '❓';
+        return '•';
     }
-  };
+  })();
 
-  const getPriorityLevel = () => {
-    const normalizedPriority = priority?.toLowerCase();
+  const label = (() => {
     switch (normalizedPriority) {
       case 'urgent':
         return 'URGENT';
@@ -52,14 +51,17 @@ const PriorityBadge: React.FC<PriorityBadgeProps> = ({ priority, className = '' 
       default:
         return priority?.toUpperCase() || 'UNKNOWN';
     }
-  };
+  })();
 
   return (
-    <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold shadow-lg transform hover:scale-105 transition-all duration-200 ${getPriorityStyles()} ${className}`}>
-      <span className="mr-1.5 text-sm">{getPriorityIcon()}</span>
-      {getPriorityLevel()}
+    <span
+      className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold shadow-sm transition-colors ${styles} ${className}`}
+    >
+      <span className="text-sm leading-none">{icon}</span>
+      {label}
     </span>
   );
 };
 
 export default PriorityBadge;
+

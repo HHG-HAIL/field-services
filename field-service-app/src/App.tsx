@@ -15,6 +15,7 @@ import { useApiWithFallback } from './hooks/useApiWithFallback';
 import { mockUsers, mockCustomers } from './data/mockData';
 import { WorkOrder, User, Technician } from './types';
 import './App.css';
+import { ThemeProvider } from './context/ThemeContext';
 
 function App() {
   const { 
@@ -123,12 +124,13 @@ function App() {
   }
 
   return (
-    <Router>
-      <Layout 
-        user={currentUser} 
-        isBackendConnected={isBackendAvailable} 
-        isLoading={loading}
-      >
+    <ThemeProvider>
+      <Router>
+        <Layout 
+          user={currentUser} 
+          isBackendConnected={isBackendAvailable} 
+          isLoading={loading}
+        >
         <Routes>
           <Route 
             path="/" 
@@ -241,8 +243,9 @@ function App() {
         )}
         
         <ApiDebugPanel />
-      </Layout>
-    </Router>
+        </Layout>
+      </Router>
+    </ThemeProvider>
   );
 }
 

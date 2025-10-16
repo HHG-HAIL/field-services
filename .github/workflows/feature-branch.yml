@@ -62,8 +62,15 @@ jobs:
           npx tsc --noEmit
 
       - name: Quick backend compile
-        working-directory: ./backend
-        run: mvn clean compile -q
+        run: |
+          for service in work-order-service technician-service schedule-service; do
+            if [ -d "$service" ]; then
+              echo "Compiling $service..."
+              (cd "$service" && mvn compile -q)
+            else
+              echo "Directory $service not found, skipping."
+            fi
+          done
 
       - name: Basic smoke test
         working-directory: ./field-service-app
@@ -116,10 +123,17 @@ jobs:
           npm run build
 
       - name: Backend tests and build
-        working-directory: ./backend
         run: |
-          mvn clean test
-          mvn package -DskipTests
+          for service in work-order-service technician-service schedule-service; do
+            if [ -d "$service" ]; then
+              echo "Running tests for $service..."
+              (cd "$service" && mvn clean test)
+              echo "Packaging $service..."
+              (cd "$service" && mvn package -DskipTests)
+            else
+              echo "Directory $service not found, skipping."
+            fi
+          done
 
   branch-status:
     needs: [quick-check, full-test-suite]

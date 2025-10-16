@@ -1,6 +1,0 @@
-com\fieldservice\schedule\controller\ScheduleController.class
-com\fieldservice\schedule\ScheduleServiceApplication.class
-com\fieldservice\schedule\config\CorsConfig.class
-com\fieldservice\schedule\config\SwaggerConfig.class
-com\fieldservice\schedule\entity\ScheduleEntry.class
-com\fieldservice\schedule\entity\ScheduleEntry$Status.class
