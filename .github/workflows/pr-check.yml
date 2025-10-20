@@ -1,10 +1,13 @@
 name: Pull Request Check
 
+permissions:
+  contents: read
+  pull-requests: read
+
 on:
   pull_request:
     branches: [ main, develop ]
     paths:
-      - 'backend/**'
       - 'work-order-service/**'
       - 'technician-service/**'
       - 'schedule-service/**'
@@ -37,19 +40,15 @@ jobs:
             frontend:
               - 'field-service-app/**'
             backend:
-              - 'backend/**'
               - 'work-order-service/**'
               - 'technician-service/**'
               - 'schedule-service/**'
             work-order:
               - 'work-order-service/**'
-              - 'backend/pom.xml'
             technician:
               - 'technician-service/**'
-              - 'backend/pom.xml'
             schedule:
               - 'schedule-service/**'
-              - 'backend/pom.xml'
 
   lint-and-test-frontend:
     needs: detect-changes
