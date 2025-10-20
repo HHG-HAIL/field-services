@@ -2,8 +2,8 @@ name: Pull Request Check
 
 permissions:
   contents: read
-  pull-requests: read
   issues: write
+  pull-requests: write
 
 on:
   pull_request:
@@ -232,6 +232,7 @@ jobs:
     
     steps:
       - name: PR Summary Comment
+        if: ${{ github.event.pull_request.head.repo.fork == false }}
         uses: actions/github-script@v6
         with:
           script: |
