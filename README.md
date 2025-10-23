@@ -42,11 +42,14 @@ This project follows a microservices architecture pattern with the following key
 
 Comprehensive documentation is available in the `/docs` folder:
 
+- **[Documentation Index](docs/INDEX.md)** - Complete documentation index and navigation
 - **[Developer Guide](docs/developer-guide.md)** - Getting started with development
+- **[Developer Checklist](docs/DEVELOPER-CHECKLIST.md)** - Checklist for code quality and standards
 - **[Architecture Guide](docs/architecture.md)** - System architecture and design decisions
 - **[API Documentation](docs/api-guide.md)** - API specifications and usage
 - **[Contributing Guide](CONTRIBUTING.md)** - How to contribute to the project
 - **[Copilot Instructions](.github/copilot-instructions.md)** - GitHub Copilot usage guidelines
+- **[Integration Summary](docs/INTEGRATION-SUMMARY.md)** - Summary of Copilot instructions integration
 
 ### Service-Specific Documentation
 
