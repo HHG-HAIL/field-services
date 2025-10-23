@@ -321,6 +321,18 @@ export COPILOT_JAVA_VERSION="17"
 export COPILOT_SPRING_BOOT_VERSION="3.x"
 ```
 
+## Field Service Dispatch System
+
+For comprehensive guidelines on managing the Field Service Task Dispatch System, including user personas, MVP features, product backlog, and daily operational procedures, see the dedicated [Field Service Task Dispatch System Guide](field-service-dispatch-system.md).
+
+The dispatch system documentation includes:
+- **User Personas**: Dispatcher, Field Technician, and Field Service Manager profiles with goals and pain points
+- **MVP Features**: Core functionality including work order management, manual assignment, schedule visualization, mobile access, and location mapping
+- **Product Backlog**: Organized using MoSCoW framework (Must-Have, Should-Have, Could-Have, Won't-Have)
+- **Success Metrics**: Measurable targets for adoption, completion rates, and operational efficiency
+- **Phased Roadmap**: 24-month implementation plan from MVP to AI-powered features
+- **Agent Instructions**: Daily workflows for schedule optimization, real-time communication, exception handling, and reporting
+
 ## Usage Scenarios
 
 ### Scenario 1: Creating a New Microservice
@@ -608,6 +620,7 @@ For new team members:
 
 ### Internal Documentation
 - [Main Copilot Instructions](copilot-instructions.md)
+- [Field Service Task Dispatch System](field-service-dispatch-system.md)
 - [Spring Boot Guidelines](copilot-instructions/spring-boot.md)
 - [Microservices Patterns](copilot-instructions/microservices.md)
 - [Testing Guidelines](copilot-instructions/testing.md)
