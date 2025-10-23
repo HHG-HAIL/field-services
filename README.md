@@ -49,6 +49,7 @@ Comprehensive documentation is available in the `/docs` folder:
 - **[API Documentation](docs/api-guide.md)** - API specifications and usage
 - **[Contributing Guide](CONTRIBUTING.md)** - How to contribute to the project
 - **[Copilot Instructions](.github/copilot-instructions.md)** - GitHub Copilot usage guidelines
+- **[Copilot Agents Guide](.github/agents.md)** - Best practices for using GitHub Copilot agents
 - **[Integration Summary](docs/INTEGRATION-SUMMARY.md)** - Summary of Copilot instructions integration
 
 ### Service-Specific Documentation
