@@ -126,6 +126,11 @@ public class WorkOrderService {
         WorkOrder workOrder = workOrderMapper.toEntity(request);
         workOrder.setWorkOrderNumber(generateWorkOrderNumber());
         
+        // Initialize items list if null (MapStruct doesn't call builder)
+        if (workOrder.getItems() == null) {
+            workOrder.setItems(new ArrayList<>());
+        }
+        
         // Add items if present
         if (request.getItems() != null && !request.getItems().isEmpty()) {
             List<WorkOrderItem> items = request.getItems().stream()
