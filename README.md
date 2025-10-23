@@ -50,6 +50,7 @@ Comprehensive documentation is available in the `/docs` folder:
 - **[Contributing Guide](CONTRIBUTING.md)** - How to contribute to the project
 - **[Copilot Instructions](.github/copilot-instructions.md)** - GitHub Copilot usage guidelines
 - **[Copilot Agents Guide](.github/agents.md)** - Best practices for using GitHub Copilot agents
+- **[Field Service Dispatch System](.github/field-service-dispatch-system.md)** - Task dispatch system guide for agents
 - **[Integration Summary](docs/INTEGRATION-SUMMARY.md)** - Summary of Copilot instructions integration
 
 ### Service-Specific Documentation

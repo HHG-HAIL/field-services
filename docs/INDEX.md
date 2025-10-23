@@ -31,6 +31,7 @@ Making the most of GitHub Copilot:
 ### Main Guidelines
 - **[Copilot Instructions](../.github/copilot-instructions.md)** - Overview and general guidelines
 - **[Agents Guide](../.github/agents.md)** - Best practices for using GitHub Copilot agents
+- **[Field Service Dispatch System](../.github/field-service-dispatch-system.md)** - Task dispatch system guide for agents
 
 ### Detailed Guides
 - **[Spring Boot Guide](../.github/copilot-instructions/spring-boot.md)** - Spring Boot specific patterns
@@ -65,6 +66,12 @@ Making the most of GitHub Copilot:
 1. [Testing Guide](../.github/copilot-instructions/testing.md) - Testing strategies
 2. [API Guide](api-guide.md) - API testing
 3. [Developer Guide](developer-guide.md) - Running tests locally
+
+### Dispatchers & Operations
+
+1. [Field Service Dispatch System](../.github/field-service-dispatch-system.md) - Complete dispatch system guide
+2. [Architecture Guide](architecture.md) - System architecture understanding
+3. [API Guide](api-guide.md) - API usage for integrations
 
 ## By Topic
 
@@ -117,6 +124,15 @@ Making the most of GitHub Copilot:
 - [Copilot Instructions](../.github/copilot-instructions.md)
 - [Developer Guide - Using GitHub Copilot](developer-guide.md#using-github-copilot)
 - [Contributing Guide - Using GitHub Copilot](../CONTRIBUTING.md#using-github-copilot)
+
+### Field Service Dispatch Operations
+
+- [Field Service Dispatch System Guide](../.github/field-service-dispatch-system.md)
+- [User Personas](../.github/field-service-dispatch-system.md#user-personas)
+- [MVP Features](../.github/field-service-dispatch-system.md#mvp-features)
+- [Product Backlog](../.github/field-service-dispatch-system.md#product-backlog-moscow-framework)
+- [Success Metrics & Roadmap](../.github/field-service-dispatch-system.md#success-metrics--roadmap)
+- [Agent Instructions](../.github/field-service-dispatch-system.md#agent-instruction-guidelines)
 
 ## Quick Links
 
