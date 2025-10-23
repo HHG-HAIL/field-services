@@ -337,6 +337,7 @@ Before accepting Copilot suggestions:
 
 ## Additional Resources
 
+- [GitHub Copilot Agents Guide](agents.md)
 - [Spring Boot Specific Guidelines](copilot-instructions/spring-boot.md)
 - [Microservices Patterns](copilot-instructions/microservices.md)
 - [Testing Guidelines](copilot-instructions/testing.md)

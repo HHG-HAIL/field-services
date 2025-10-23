@@ -30,6 +30,7 @@ Making the most of GitHub Copilot:
 
 ### Main Guidelines
 - **[Copilot Instructions](../.github/copilot-instructions.md)** - Overview and general guidelines
+- **[Agents Guide](../.github/agents.md)** - Best practices for using GitHub Copilot agents
 
 ### Detailed Guides
 - **[Spring Boot Guide](../.github/copilot-instructions/spring-boot.md)** - Spring Boot specific patterns
