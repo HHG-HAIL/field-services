@@ -1,1 +1,1 @@
-web: cd work-order-service && java -Dserver.port=$PORT -jar target/work-order-service-1.0.0-SNAPSHOT.jar
+web: java -Dserver.port=$PORT -Dspring.profiles.active=production -jar work-order-service/target/work-order-service-1.0.0-SNAPSHOT.jar
