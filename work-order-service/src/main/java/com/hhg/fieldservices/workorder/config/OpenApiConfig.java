@@ -11,7 +11,8 @@ import org.springframework.context.annotation.Configuration;
 import java.util.List;
 
 /**
- * OpenAPI/Swagger configuration for the Work Order Service.
+ * OpenAPI/Swagger configuration for Work Order Service.
+ * Provides API documentation UI at /swagger-ui.html
  * 
  * @author Field Services Team
  * @version 1.0
@@ -21,31 +22,28 @@ public class OpenApiConfig {
 
     @Bean
     public OpenAPI workOrderServiceOpenAPI() {
-        Server devServer = new Server();
-        devServer.setUrl("http://localhost:8084");
-        devServer.setDescription("Development server");
+        Server localServer = new Server()
+                .url("http://localhost:8084")
+                .description("Local development server");
 
-        Contact contact = new Contact();
-        contact.setEmail("team@fieldservices.com");
-        contact.setName("Field Services Team");
-        contact.setUrl("https://github.com/HHG-HAIL/field-services");
+        Contact contact = new Contact()
+                .name("Field Services Team")
+                .email("team@fieldservices.com");
 
         License license = new License()
-            .name("MIT License")
-            .url("https://choosealicense.com/licenses/mit/");
+                .name("MIT License")
+                .url("https://opensource.org/licenses/MIT");
 
         Info info = new Info()
-            .title("Work Order Service API")
-            .version("1.0.0")
-            .contact(contact)
-            .description("RESTful API for managing field service work orders. " +
-                        "This service provides comprehensive work order management capabilities " +
-                        "including creation, updates, assignments, and tracking.")
-            .termsOfService("https://fieldservices.com/terms")
-            .license(license);
+                .title("Work Order Service API")
+                .version("1.0.0")
+                .description("RESTful API for managing field service work orders. " +
+                        "Provides endpoints for creating, updating, viewing, and deleting work orders.")
+                .contact(contact)
+                .license(license);
 
         return new OpenAPI()
-            .info(info)
-            .servers(List.of(devServer));
+                .info(info)
+                .servers(List.of(localServer));
     }
 }
