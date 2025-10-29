@@ -1,6 +1,6 @@
 -- Create work_orders table
 CREATE TABLE work_orders (
-    id BIGSERIAL PRIMARY KEY,
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
     work_order_number VARCHAR(50) NOT NULL UNIQUE,
     title VARCHAR(200) NOT NULL,
     description VARCHAR(2000),
@@ -29,7 +29,7 @@ CREATE TABLE work_orders (
 
 -- Create work_order_items table
 CREATE TABLE work_order_items (
-    id BIGSERIAL PRIMARY KEY,
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
     work_order_id BIGINT NOT NULL,
     item_type VARCHAR(20) NOT NULL,
     description VARCHAR(200) NOT NULL,
@@ -54,9 +54,3 @@ CREATE INDEX idx_created_at ON work_orders(created_at);
 
 -- Create indexes for work_order_items table
 CREATE INDEX idx_work_order_id ON work_order_items(work_order_id);
-
--- Add comments for documentation
-COMMENT ON TABLE work_orders IS 'Stores field service work orders';
-COMMENT ON TABLE work_order_items IS 'Stores line items/tasks for work orders';
-COMMENT ON COLUMN work_orders.status IS 'Work order status: PENDING, ASSIGNED, IN_PROGRESS, ON_HOLD, COMPLETED, CANCELLED';
-COMMENT ON COLUMN work_orders.priority IS 'Priority level: LOW, NORMAL, HIGH, CRITICAL, EMERGENCY';
