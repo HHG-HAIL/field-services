@@ -1,0 +1,49 @@
+{
+  "name": "Work Order Service",
+  "description": "Spring Boot microservice for managing field service work orders with Swagger UI documentation",
+  "image": "heroku/java",
+  "stack": "heroku-22",
+  "buildpacks": [
+    {
+      "url": "heroku/java"
+    }
+  ],
+  "env": {
+    "MAVEN_CUSTOM_OPTS": {
+      "description": "Maven build options",
+      "value": "-DskipTests"
+    },
+    "JAVA_TOOL_OPTIONS": {
+      "description": "Java runtime options",
+      "value": "-Xmx300m -Xss512k -XX:CICompilerCount=2 -Dfile.encoding=UTF-8"
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "eco"
+    }
+  },
+  "addons": [
+    {
+      "plan": "heroku-postgresql:essential-0",
+      "options": {
+        "version": "15"
+      }
+    }
+  ],
+  "scripts": {
+    "postdeploy": "echo 'Work Order Service deployed successfully! Access Swagger UI at /swagger-ui.html'"
+  },
+  "keywords": [
+    "spring-boot",
+    "java",
+    "microservices",
+    "swagger",
+    "field-services",
+    "work-order"
+  ],
+  "repository": "https://github.com/HHG-HAIL/field-services",
+  "success_url": "/swagger-ui.html",
+  "website": "https://github.com/HHG-HAIL/field-services"
+}

@@ -1,6 +1,6 @@
 -- Create work_orders table
 CREATE TABLE work_orders (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     work_order_number VARCHAR(50) NOT NULL UNIQUE,
     title VARCHAR(200) NOT NULL,
     description VARCHAR(2000),
@@ -29,7 +29,7 @@ CREATE TABLE work_orders (
 
 -- Create work_order_items table
 CREATE TABLE work_order_items (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     work_order_id BIGINT NOT NULL,
     item_type VARCHAR(20) NOT NULL,
     description VARCHAR(200) NOT NULL,

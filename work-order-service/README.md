@@ -1,10 +1,47 @@
 # Work Order Service
 
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/HHG-HAIL/field-services)
+
 A microservice for managing field service work orders in the Field Services platform.
 
 ## Overview
 
 The Work Order Service is responsible for managing the complete lifecycle of work orders, from creation to completion. It provides RESTful APIs for CRUD operations, status management, assignment to technicians, and various query capabilities.
+
+## 🚀 Quick Deploy to Heroku
+
+### One-Click Deployment
+
+1. Click the **Deploy to Heroku** button above
+2. Enter a unique app name (e.g., `your-work-order-service`)
+3. Choose your region (US or Europe)  
+4. Click **Deploy app**
+5. Wait for deployment to complete
+6. Click **View** to access your application
+7. Access Swagger UI at: `https://your-app-name.herokuapp.com/swagger-ui.html`
+
+### Manual Heroku Deployment
+
+```bash
+# Clone the repository
+git clone https://github.com/HHG-HAIL/field-services.git
+cd field-services/work-order-service
+
+# Login to Heroku
+heroku login
+
+# Create Heroku app
+heroku create your-work-order-service
+
+# Add PostgreSQL addon
+heroku addons:create heroku-postgresql:essential-0
+
+# Deploy
+git push heroku main
+
+# Open your app
+heroku open
+```
 
 ## Technology Stack
 
