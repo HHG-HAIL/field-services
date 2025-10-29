@@ -1,0 +1,1 @@
+web: cd work-order-service && java -Dserver.port=$PORT -jar target/work-order-service-1.0.0-SNAPSHOT.jar
