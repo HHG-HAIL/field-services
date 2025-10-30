@@ -30,9 +30,10 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/v1/work-orders")
+@CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.PATCH, RequestMethod.OPTIONS})
 @RequiredArgsConstructor
 @Slf4j
-@Tag(name = "Work Orders", description = "Work order management API for field services")
+@Tag(name = "Work Orders", description = "Work Order Management API")
 public class WorkOrderController {
     
     private final WorkOrderService workOrderService;
