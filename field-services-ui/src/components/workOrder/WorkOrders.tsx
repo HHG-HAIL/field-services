@@ -10,6 +10,7 @@ import type {
   UpdateWorkOrderRequest,
   WorkOrderStatus,
 } from '../../types/workOrder';
+import type { PaginatedResponse } from '../../types/common';
 import workOrderService from '../../services/workOrder.service';
 import { useApi } from '../../hooks/useApi';
 import WorkOrderList from './WorkOrderList';
@@ -19,6 +20,7 @@ import WorkOrderFilters, { type FilterCriteria } from './WorkOrderFilters';
 import Button from '../common/Button';
 
 type ViewMode = 'list' | 'create' | 'edit' | 'view';
+type WorkOrderResult = WorkOrder[] | PaginatedResponse<WorkOrder> | null;
 
 const DEFAULT_PAGE_SIZE = 100;
 
@@ -102,7 +104,7 @@ export const WorkOrders = () => {
   }, []);
 
   const loadWorkOrders = async (filter: FilterCriteria = currentFilter) => {
-    let result: WorkOrder[] | { content: WorkOrder[] } | null = null;
+    let result: WorkOrderResult = null;
 
     switch (filter.type) {
       case 'status':

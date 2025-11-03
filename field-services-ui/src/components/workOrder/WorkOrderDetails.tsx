@@ -296,13 +296,13 @@ export const WorkOrderDetails = ({
       </div>
 
       {/* Actions */}
-      {(onAssign || onStatusUpdate) && (
+      {onAssign && onStatusUpdate && (
         <div style={sectionStyle}>
           <h2 style={sectionTitleStyle}>Quick Actions</h2>
           <WorkOrderActions
             workOrder={workOrder}
-            onAssign={onAssign || (async () => {})}
-            onStatusUpdate={onStatusUpdate || (async () => {})}
+            onAssign={onAssign}
+            onStatusUpdate={onStatusUpdate}
             isLoading={isUpdating}
           />
         </div>
