@@ -6,6 +6,7 @@
 import apiService from './api.service';
 import type {
   WorkOrder,
+  WorkOrderStatus,
   CreateWorkOrderRequest,
   UpdateWorkOrderRequest,
 } from '../types/workOrder';
@@ -73,7 +74,7 @@ export const workOrderService = {
    * @returns Paginated list of work orders
    */
   searchByStatus: (
-    status: string,
+    status: WorkOrderStatus,
     page = 0,
     size = 20,
   ): Promise<PaginatedResponse<WorkOrder>> => {
