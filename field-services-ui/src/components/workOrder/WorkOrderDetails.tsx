@@ -3,14 +3,18 @@
  * Displays detailed information about a single work order
  */
 
-import type { WorkOrder } from '../../types/workOrder';
+import type { WorkOrder, WorkOrderStatus } from '../../types/workOrder';
 import Button from '../common/Button';
+import WorkOrderActions from './WorkOrderActions';
 
 interface WorkOrderDetailsProps {
   workOrder: WorkOrder;
   onEdit: () => void;
   onDelete: () => void;
   onBack: () => void;
+  onAssign?: (technicianId: number, technicianName: string) => Promise<void>;
+  onStatusUpdate?: (status: WorkOrderStatus) => Promise<void>;
+  isUpdating?: boolean;
 }
 
 export const WorkOrderDetails = ({
@@ -18,6 +22,9 @@ export const WorkOrderDetails = ({
   onEdit,
   onDelete,
   onBack,
+  onAssign,
+  onStatusUpdate,
+  isUpdating = false,
 }: WorkOrderDetailsProps) => {
   const containerStyle = {
     maxWidth: '900px',
@@ -287,6 +294,19 @@ export const WorkOrderDetails = ({
           <div style={valueStyle}>{workOrder.version}</div>
         </div>
       </div>
+
+      {/* Actions */}
+      {onAssign && onStatusUpdate && (
+        <div style={sectionStyle}>
+          <h2 style={sectionTitleStyle}>Quick Actions</h2>
+          <WorkOrderActions
+            workOrder={workOrder}
+            onAssign={onAssign}
+            onStatusUpdate={onStatusUpdate}
+            isLoading={isUpdating}
+          />
+        </div>
+      )}
     </div>
   );
 };
