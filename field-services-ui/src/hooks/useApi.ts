@@ -12,7 +12,6 @@ interface UseApiState<T> {
   error: string | null;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 interface UseApiReturn<T> extends UseApiState<T> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   execute: (...args: any[]) => Promise<T | null>;
