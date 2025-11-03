@@ -134,7 +134,7 @@ export const workOrderService = {
     return apiService.post<WorkOrder>(`${BASE_PATH}/${id}/assign`, null, {
       params: {
         technicianId: String(technicianId),
-        technicianName: technicianName,
+        technicianName,
       },
     });
   },

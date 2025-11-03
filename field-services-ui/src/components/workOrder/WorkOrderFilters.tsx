@@ -19,9 +19,14 @@ interface WorkOrderFiltersProps {
   isLoading?: boolean;
 }
 
+interface ValidationError {
+  message: string;
+}
+
 export const WorkOrderFilters = ({ onFilter, isLoading = false }: WorkOrderFiltersProps) => {
   const [filterType, setFilterType] = useState<FilterCriteria['type']>('all');
   const [filterValue, setFilterValue] = useState('');
+  const [error, setError] = useState<ValidationError | null>(null);
 
   const containerStyle = {
     backgroundColor: 'white',
@@ -36,6 +41,16 @@ export const WorkOrderFilters = ({ onFilter, isLoading = false }: WorkOrderFilte
     gridTemplateColumns: '200px 1fr auto',
     gap: '1rem',
     alignItems: 'flex-end',
+  };
+
+  const errorStyle = {
+    backgroundColor: '#ffebee',
+    border: '1px solid #f44336',
+    borderRadius: '4px',
+    padding: '0.5rem',
+    marginTop: '0.5rem',
+    color: '#c62828',
+    fontSize: '0.875rem',
   };
 
   const filterTypeOptions = [
@@ -65,12 +80,14 @@ export const WorkOrderFilters = ({ onFilter, isLoading = false }: WorkOrderFilte
   ];
 
   const handleApplyFilter = () => {
+    setError(null);
+    
     if (filterType === 'all' || filterType === 'overdue') {
       onFilter({ type: filterType });
     } else if (filterValue) {
       onFilter({ type: filterType, value: filterValue });
     } else {
-      alert('Please provide a filter value');
+      setError({ message: 'Please provide a filter value' });
     }
   };
 
@@ -78,6 +95,7 @@ export const WorkOrderFilters = ({ onFilter, isLoading = false }: WorkOrderFilte
     const newType = e.target.value as FilterCriteria['type'];
     setFilterType(newType);
     setFilterValue('');
+    setError(null);
   };
 
   const renderValueInput = () => {
@@ -91,7 +109,10 @@ export const WorkOrderFilters = ({ onFilter, isLoading = false }: WorkOrderFilte
           name="filterValue"
           label="Status"
           value={filterValue}
-          onChange={(e) => setFilterValue(e.target.value)}
+          onChange={(e) => {
+            setFilterValue(e.target.value);
+            setError(null);
+          }}
           options={statusOptions}
           disabled={isLoading}
           fullWidth
@@ -105,7 +126,10 @@ export const WorkOrderFilters = ({ onFilter, isLoading = false }: WorkOrderFilte
           name="filterValue"
           label="Priority"
           value={filterValue}
-          onChange={(e) => setFilterValue(e.target.value)}
+          onChange={(e) => {
+            setFilterValue(e.target.value);
+            setError(null);
+          }}
           options={priorityOptions}
           disabled={isLoading}
           fullWidth
@@ -120,7 +144,10 @@ export const WorkOrderFilters = ({ onFilter, isLoading = false }: WorkOrderFilte
           label={filterType === 'customer' ? 'Customer ID' : 'Technician ID'}
           type="number"
           value={filterValue}
-          onChange={(e) => setFilterValue(e.target.value)}
+          onChange={(e) => {
+            setFilterValue(e.target.value);
+            setError(null);
+          }}
           placeholder={`Enter ${filterType} ID`}
           disabled={isLoading}
           fullWidth
@@ -151,6 +178,11 @@ export const WorkOrderFilters = ({ onFilter, isLoading = false }: WorkOrderFilte
           Apply Filter
         </Button>
       </div>
+      {error && (
+        <div style={errorStyle}>
+          <strong>Error:</strong> {error.message}
+        </div>
+      )}
     </div>
   );
 };

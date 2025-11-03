@@ -10,6 +10,10 @@ import Button from '../common/Button';
 import Input from '../common/Input';
 import Select from '../common/Select';
 
+interface ValidationError {
+  message: string;
+}
+
 interface WorkOrderActionsProps {
   workOrder: WorkOrder;
   onAssign: (technicianId: number, technicianName: string) => Promise<void>;
@@ -28,6 +32,8 @@ export const WorkOrderActions = ({
   const [technicianId, setTechnicianId] = useState('');
   const [technicianName, setTechnicianName] = useState('');
   const [selectedStatus, setSelectedStatus] = useState<WorkOrderStatus>(workOrder.status);
+  const [assignError, setAssignError] = useState<ValidationError | null>(null);
+  const [statusError, setStatusError] = useState<ValidationError | null>(null);
 
   const containerStyle = {
     display: 'flex',
@@ -49,6 +55,16 @@ export const WorkOrderActions = ({
     marginTop: '0.5rem',
   };
 
+  const errorStyle = {
+    backgroundColor: '#ffebee',
+    border: '1px solid #f44336',
+    borderRadius: '4px',
+    padding: '0.5rem',
+    marginBottom: '0.5rem',
+    color: '#c62828',
+    fontSize: '0.875rem',
+  };
+
   const formRowStyle = {
     display: 'flex',
     gap: '1rem',
@@ -66,9 +82,11 @@ export const WorkOrderActions = ({
   ];
 
   const handleAssignSubmit = async () => {
+    setAssignError(null);
     const id = Number(technicianId);
+    
     if (!id || !technicianName.trim()) {
-      alert('Please provide both technician ID and name');
+      setAssignError({ message: 'Please provide both technician ID and name' });
       return;
     }
 
@@ -76,19 +94,25 @@ export const WorkOrderActions = ({
     setShowAssignForm(false);
     setTechnicianId('');
     setTechnicianName('');
+    setAssignError(null);
   };
 
   const handleStatusSubmit = async () => {
+    setStatusError(null);
+    
     if (selectedStatus === workOrder.status) {
-      alert('Status is already set to this value');
+      setStatusError({ message: 'Status is already set to this value' });
       return;
     }
 
     await onStatusUpdate(selectedStatus);
     setShowStatusForm(false);
+    setStatusError(null);
   };
 
-  const canAssign = workOrder.status !== 'COMPLETED' && workOrder.status !== 'CANCELLED';
+  const canAssign =
+    workOrder.status !== WorkOrderStatusEnum.COMPLETED &&
+    workOrder.status !== WorkOrderStatusEnum.CANCELLED;
   const canUpdateStatus = true;
 
   return (
@@ -117,13 +141,21 @@ export const WorkOrderActions = ({
       {showAssignForm && (
         <div style={formStyle}>
           <h4 style={{ marginTop: 0, marginBottom: '1rem' }}>Assign to Technician</h4>
+          {assignError && (
+            <div style={errorStyle}>
+              <strong>Error:</strong> {assignError.message}
+            </div>
+          )}
           <div style={formRowStyle}>
             <Input
               name="technicianId"
               label="Technician ID"
               type="number"
               value={technicianId}
-              onChange={(e) => setTechnicianId(e.target.value)}
+              onChange={(e) => {
+                setTechnicianId(e.target.value);
+                setAssignError(null);
+              }}
               placeholder="Enter technician ID"
               disabled={isLoading}
             />
@@ -131,7 +163,10 @@ export const WorkOrderActions = ({
               name="technicianName"
               label="Technician Name"
               value={technicianName}
-              onChange={(e) => setTechnicianName(e.target.value)}
+              onChange={(e) => {
+                setTechnicianName(e.target.value);
+                setAssignError(null);
+              }}
               placeholder="Enter technician name"
               disabled={isLoading}
             />
@@ -141,7 +176,10 @@ export const WorkOrderActions = ({
               {isLoading ? 'Assigning...' : 'Assign'}
             </Button>
             <Button
-              onClick={() => setShowAssignForm(false)}
+              onClick={() => {
+                setShowAssignForm(false);
+                setAssignError(null);
+              }}
               disabled={isLoading}
               variant="secondary"
             >
@@ -154,11 +192,19 @@ export const WorkOrderActions = ({
       {showStatusForm && (
         <div style={formStyle}>
           <h4 style={{ marginTop: 0, marginBottom: '1rem' }}>Update Status</h4>
+          {statusError && (
+            <div style={errorStyle}>
+              <strong>Error:</strong> {statusError.message}
+            </div>
+          )}
           <Select
             name="status"
             label="New Status"
             value={selectedStatus}
-            onChange={(e) => setSelectedStatus(e.target.value as WorkOrderStatus)}
+            onChange={(e) => {
+              setSelectedStatus(e.target.value as WorkOrderStatus);
+              setStatusError(null);
+            }}
             options={statusOptions}
             disabled={isLoading}
             fullWidth
@@ -168,7 +214,10 @@ export const WorkOrderActions = ({
               {isLoading ? 'Updating...' : 'Update'}
             </Button>
             <Button
-              onClick={() => setShowStatusForm(false)}
+              onClick={() => {
+                setShowStatusForm(false);
+                setStatusError(null);
+              }}
               disabled={isLoading}
               variant="secondary"
             >
