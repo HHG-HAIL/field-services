@@ -28,7 +28,7 @@ public class CorsConfig implements WebMvcConfigurer {
                 .allowedOriginPatterns("*")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD")
                 .allowedHeaders("*")
-                .allowCredentials(true)
+                .allowCredentials(false)
                 .maxAge(3600);
         
         log.info("CORS mappings configured successfully");
@@ -51,8 +51,8 @@ public class CorsConfig implements WebMvcConfigurer {
         // Allow all headers
         configuration.setAllowedHeaders(Collections.singletonList("*"));
         
-        // Allow credentials
-        configuration.setAllowCredentials(true);
+        // Disable credentials to allow wildcard origins
+        configuration.setAllowCredentials(false);
         
         // Cache preflight response for 1 hour
         configuration.setMaxAge(3600L);
