@@ -15,6 +15,10 @@ import Select from '../common/Select';
 import TextArea from '../common/TextArea';
 import Button from '../common/Button';
 
+// Validation constants
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const ZIP_CODE_REGEX = /^[0-9]{5}(-[0-9]{4})?$/;
+
 interface CreateWorkOrderFormProps {
   onSubmit: (data: CreateWorkOrderRequest) => void | Promise<void>;
   onCancel: () => void;
@@ -133,11 +137,11 @@ export const WorkOrderForm = (props: WorkOrderFormProps) => {
       newErrors.customerId = 'Customer ID is required';
     }
 
-    if (formData.customerEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.customerEmail)) {
+    if (formData.customerEmail && !EMAIL_REGEX.test(formData.customerEmail)) {
       newErrors.customerEmail = 'Invalid email format';
     }
 
-    if (formData.zipCode && !/^[0-9]{5}(-[0-9]{4})?$/.test(formData.zipCode)) {
+    if (formData.zipCode && !ZIP_CODE_REGEX.test(formData.zipCode)) {
       newErrors.zipCode = 'Invalid ZIP code format';
     }
 
@@ -225,7 +229,7 @@ export const WorkOrderForm = (props: WorkOrderFormProps) => {
     display: 'grid',
     gridTemplateColumns: '1fr 1fr',
     gap: '1rem',
-    marginBottom: '0',
+    marginBottom: '1rem',
   };
 
   const buttonGroupStyle = {

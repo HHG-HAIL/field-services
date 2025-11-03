@@ -18,6 +18,8 @@ import Button from '../common/Button';
 
 type ViewMode = 'list' | 'create' | 'edit' | 'view';
 
+const DEFAULT_PAGE_SIZE = 100;
+
 export const WorkOrders = () => {
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [selectedWorkOrder, setSelectedWorkOrder] = useState<WorkOrder | undefined>();
@@ -55,7 +57,7 @@ export const WorkOrders = () => {
   }, []);
 
   const loadWorkOrders = async () => {
-    const result = await fetchWorkOrders(0, 100);
+    const result = await fetchWorkOrders(0, DEFAULT_PAGE_SIZE);
     if (result) {
       setWorkOrders(result.content);
     }
