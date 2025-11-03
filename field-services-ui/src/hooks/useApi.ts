@@ -12,8 +12,10 @@ interface UseApiState<T> {
   error: string | null;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 interface UseApiReturn<T> extends UseApiState<T> {
-  execute: (...args: unknown[]) => Promise<T | null>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  execute: (...args: any[]) => Promise<T | null>;
   reset: () => void;
 }
 
@@ -22,7 +24,8 @@ interface UseApiReturn<T> extends UseApiState<T> {
  * @param apiFunction - The API function to execute
  * @returns Object with data, loading, error states and execute function
  */
-export function useApi<T>(apiFunction: (...args: unknown[]) => Promise<T>): UseApiReturn<T> {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function useApi<T>(apiFunction: (...args: any[]) => Promise<T>): UseApiReturn<T> {
   const [state, setState] = useState<UseApiState<T>>({
     data: null,
     loading: false,
@@ -30,7 +33,8 @@ export function useApi<T>(apiFunction: (...args: unknown[]) => Promise<T>): UseA
   });
 
   const execute = useCallback(
-    async (...args: unknown[]) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async (...args: any[]) => {
       setState({ data: null, loading: true, error: null });
 
       try {
