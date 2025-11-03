@@ -209,6 +209,17 @@ export const WorkOrders = () => {
     }
   };
 
+  const handleQuickAssign = async (
+    workOrder: WorkOrder,
+    technicianId: number,
+    technicianName: string,
+  ) => {
+    const result = await assignToTechnician(workOrder.id, technicianId, technicianName);
+    if (result) {
+      await loadWorkOrders();
+    }
+  };
+
   const handleStatusUpdate = async (status: WorkOrderStatus) => {
     if (!selectedWorkOrder) return;
 
@@ -295,6 +306,7 @@ export const WorkOrders = () => {
             onView={handleView}
             onEdit={handleEdit}
             onDelete={handleDelete}
+            onAssign={handleQuickAssign}
             isLoading={isLoading}
           />
         </>
