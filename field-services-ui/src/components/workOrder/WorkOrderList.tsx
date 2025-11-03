@@ -3,14 +3,17 @@
  * Displays a list of work orders in a table format
  */
 
+import { useState } from 'react';
 import type { WorkOrder } from '../../types/workOrder';
 import Button from '../common/Button';
+import WorkOrderAssignmentModal from './WorkOrderAssignmentModal';
 
 interface WorkOrderListProps {
   workOrders: WorkOrder[];
   onView: (workOrder: WorkOrder) => void;
   onEdit: (workOrder: WorkOrder) => void;
   onDelete: (workOrder: WorkOrder) => void;
+  onAssign?: (workOrder: WorkOrder, technicianId: number, technicianName: string) => Promise<void>;
   isLoading?: boolean;
 }
 
@@ -19,8 +22,27 @@ export const WorkOrderList = ({
   onView,
   onEdit,
   onDelete,
+  onAssign,
   isLoading = false,
 }: WorkOrderListProps) => {
+  const [assigningWorkOrder, setAssigningWorkOrder] = useState<WorkOrder | null>(null);
+  const [isAssigning, setIsAssigning] = useState(false);
+
+  const handleAssignClick = (workOrder: WorkOrder) => {
+    setAssigningWorkOrder(workOrder);
+  };
+
+  const handleAssignSubmit = async (technicianId: number, technicianName: string) => {
+    if (!assigningWorkOrder || !onAssign) return;
+
+    setIsAssigning(true);
+    try {
+      await onAssign(assigningWorkOrder, technicianId, technicianName);
+      setAssigningWorkOrder(null);
+    } finally {
+      setIsAssigning(false);
+    }
+  };
   const tableStyle = {
     width: '100%',
     borderCollapse: 'collapse' as const,
@@ -134,6 +156,7 @@ export const WorkOrderList = ({
             <th style={thStyle}>WO Number</th>
             <th style={thStyle}>Title</th>
             <th style={thStyle}>Customer</th>
+            <th style={thStyle}>Technician</th>
             <th style={thStyle}>Priority</th>
             <th style={thStyle}>Status</th>
             <th style={thStyle}>Scheduled</th>
@@ -151,6 +174,11 @@ export const WorkOrderList = ({
                 {workOrder.customerName || `Customer #${workOrder.customerId}`}
               </td>
               <td style={tdStyle}>
+                {workOrder.assignedTechnicianName || (
+                  <span style={{ color: '#999', fontStyle: 'italic' }}>Unassigned</span>
+                )}
+              </td>
+              <td style={tdStyle}>
                 <span style={priorityStyle(workOrder.priority)}>{workOrder.priority}</span>
               </td>
               <td style={tdStyle}>
@@ -162,6 +190,17 @@ export const WorkOrderList = ({
                   <Button size="small" variant="primary" onClick={() => onView(workOrder)}>
                     View
                   </Button>
+                  {onAssign &&
+                    workOrder.status !== 'COMPLETED' &&
+                    workOrder.status !== 'CANCELLED' && (
+                      <Button
+                        size="small"
+                        variant="secondary"
+                        onClick={() => handleAssignClick(workOrder)}
+                      >
+                        {workOrder.assignedTechnicianId ? 'Reassign' : 'Assign'}
+                      </Button>
+                    )}
                   <Button size="small" variant="secondary" onClick={() => onEdit(workOrder)}>
                     Edit
                   </Button>
@@ -174,6 +213,16 @@ export const WorkOrderList = ({
           ))}
         </tbody>
       </table>
+
+      {assigningWorkOrder && (
+        <WorkOrderAssignmentModal
+          isOpen={true}
+          onClose={() => setAssigningWorkOrder(null)}
+          workOrder={assigningWorkOrder}
+          onAssign={handleAssignSubmit}
+          isLoading={isAssigning}
+        />
+      )}
     </div>
   );
 };

@@ -7,8 +7,8 @@ import { useState } from 'react';
 import type { WorkOrder, WorkOrderStatus } from '../../types/workOrder';
 import { WorkOrderStatus as WorkOrderStatusEnum } from '../../types/workOrder';
 import Button from '../common/Button';
-import Input from '../common/Input';
 import Select from '../common/Select';
+import WorkOrderAssignmentModal from './WorkOrderAssignmentModal';
 
 interface ValidationError {
   message: string;
@@ -27,12 +27,9 @@ export const WorkOrderActions = ({
   onStatusUpdate,
   isLoading = false,
 }: WorkOrderActionsProps) => {
-  const [showAssignForm, setShowAssignForm] = useState(false);
+  const [showAssignModal, setShowAssignModal] = useState(false);
   const [showStatusForm, setShowStatusForm] = useState(false);
-  const [technicianId, setTechnicianId] = useState('');
-  const [technicianName, setTechnicianName] = useState('');
   const [selectedStatus, setSelectedStatus] = useState<WorkOrderStatus>(workOrder.status);
-  const [assignError, setAssignError] = useState<ValidationError | null>(null);
   const [statusError, setStatusError] = useState<ValidationError | null>(null);
 
   const containerStyle = {
@@ -65,13 +62,6 @@ export const WorkOrderActions = ({
     fontSize: '0.875rem',
   };
 
-  const formRowStyle = {
-    display: 'flex',
-    gap: '1rem',
-    alignItems: 'flex-end',
-    marginBottom: '0.5rem',
-  };
-
   const statusOptions = [
     { value: WorkOrderStatusEnum.PENDING, label: 'Pending' },
     { value: WorkOrderStatusEnum.ASSIGNED, label: 'Assigned' },
@@ -80,22 +70,6 @@ export const WorkOrderActions = ({
     { value: WorkOrderStatusEnum.COMPLETED, label: 'Completed' },
     { value: WorkOrderStatusEnum.CANCELLED, label: 'Cancelled' },
   ];
-
-  const handleAssignSubmit = async () => {
-    setAssignError(null);
-    const id = Number(technicianId);
-    
-    if (!id || !technicianName.trim()) {
-      setAssignError({ message: 'Please provide both technician ID and name' });
-      return;
-    }
-
-    await onAssign(id, technicianName);
-    setShowAssignForm(false);
-    setTechnicianId('');
-    setTechnicianName('');
-    setAssignError(null);
-  };
 
   const handleStatusSubmit = async () => {
     setStatusError(null);
@@ -121,7 +95,7 @@ export const WorkOrderActions = ({
         {canAssign && (
           <Button
             variant="primary"
-            onClick={() => setShowAssignForm(!showAssignForm)}
+            onClick={() => setShowAssignModal(true)}
             disabled={isLoading}
           >
             {workOrder.assignedTechnicianId ? 'Reassign Technician' : 'Assign Technician'}
@@ -138,56 +112,13 @@ export const WorkOrderActions = ({
         )}
       </div>
 
-      {showAssignForm && (
-        <div style={formStyle}>
-          <h4 style={{ marginTop: 0, marginBottom: '1rem' }}>Assign to Technician</h4>
-          {assignError && (
-            <div style={errorStyle}>
-              <strong>Error:</strong> {assignError.message}
-            </div>
-          )}
-          <div style={formRowStyle}>
-            <Input
-              name="technicianId"
-              label="Technician ID"
-              type="number"
-              value={technicianId}
-              onChange={(e) => {
-                setTechnicianId(e.target.value);
-                setAssignError(null);
-              }}
-              placeholder="Enter technician ID"
-              disabled={isLoading}
-            />
-            <Input
-              name="technicianName"
-              label="Technician Name"
-              value={technicianName}
-              onChange={(e) => {
-                setTechnicianName(e.target.value);
-                setAssignError(null);
-              }}
-              placeholder="Enter technician name"
-              disabled={isLoading}
-            />
-          </div>
-          <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
-            <Button onClick={handleAssignSubmit} disabled={isLoading} variant="primary">
-              {isLoading ? 'Assigning...' : 'Assign'}
-            </Button>
-            <Button
-              onClick={() => {
-                setShowAssignForm(false);
-                setAssignError(null);
-              }}
-              disabled={isLoading}
-              variant="secondary"
-            >
-              Cancel
-            </Button>
-          </div>
-        </div>
-      )}
+      <WorkOrderAssignmentModal
+        isOpen={showAssignModal}
+        onClose={() => setShowAssignModal(false)}
+        workOrder={workOrder}
+        onAssign={onAssign}
+        isLoading={isLoading}
+      />
 
       {showStatusForm && (
         <div style={formStyle}>
