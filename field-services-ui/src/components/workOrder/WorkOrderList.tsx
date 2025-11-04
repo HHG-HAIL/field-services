@@ -18,6 +18,8 @@ interface WorkOrderListProps {
 }
 
 // Add table row hover styles
+// Note: This pattern is used because we're using inline styles but need :hover and @media support.
+// For future refactoring, consider migrating to CSS modules or styled-components.
 if (typeof document !== 'undefined') {
   const styleSheet = document.createElement('style');
   styleSheet.textContent = `
@@ -257,7 +259,14 @@ export const WorkOrderList = ({
               </td>
               <td style={tdStyle}>
                 {workOrder.assignedTechnicianName || (
-                  <span style={{ color: '#999', fontStyle: 'italic' }}>Unassigned</span>
+                  <span
+                    style={{
+                      color: 'var(--color-text-secondary)',
+                      fontStyle: 'italic',
+                    }}
+                  >
+                    Unassigned
+                  </span>
                 )}
               </td>
               <td style={tdStyle}>

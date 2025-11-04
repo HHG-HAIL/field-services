@@ -52,7 +52,7 @@ export const Modal = ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    zIndex: 'var(--z-modal)',
+    zIndex: 1050,
     padding: 'var(--spacing-md)',
     backdropFilter: 'blur(4px)',
     animation: 'fadeIn 0.2s ease-out',
