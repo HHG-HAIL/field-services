@@ -231,31 +231,41 @@ export const WorkOrders = () => {
   };
 
   const containerStyle = {
-    padding: '2rem',
-    maxWidth: '1400px',
-    margin: '0 auto',
+    padding: 0,
+    maxWidth: '100%',
+    margin: 0,
   };
 
   const headerStyle = {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: '2rem',
+    marginBottom: 'var(--spacing-xl)',
+    flexWrap: 'wrap' as const,
+    gap: 'var(--spacing-md)',
   };
 
   const titleStyle = {
-    fontSize: '2rem',
-    color: '#1976d2',
+    fontSize: 'var(--font-size-3xl)',
+    color: 'var(--color-primary)',
     margin: 0,
+    fontWeight: 'var(--font-weight-bold)',
+    display: 'flex',
+    alignItems: 'center',
+    gap: 'var(--spacing-sm)',
   };
 
   const errorStyle = {
-    backgroundColor: '#ffebee',
-    border: '1px solid #f44336',
-    borderRadius: '4px',
-    padding: '1rem',
-    marginBottom: '1rem',
-    color: '#c62828',
+    backgroundColor: 'rgba(244, 67, 54, 0.1)',
+    border: '2px solid var(--color-error)',
+    borderRadius: 'var(--radius-lg)',
+    padding: 'var(--spacing-md) var(--spacing-lg)',
+    marginBottom: 'var(--spacing-lg)',
+    color: 'var(--color-error)',
+    display: 'flex',
+    alignItems: 'center',
+    gap: 'var(--spacing-sm)',
+    boxShadow: 'var(--shadow-sm)',
   };
 
   const error =
@@ -287,15 +297,21 @@ export const WorkOrders = () => {
       {viewMode === 'list' && (
         <>
           <div style={headerStyle}>
-            <h1 style={titleStyle}>Work Orders</h1>
-            <Button variant="primary" onClick={handleCreate}>
+            <h1 style={titleStyle}>
+              <span>📋</span>
+              <span>Work Orders</span>
+            </h1>
+            <Button variant="primary" onClick={handleCreate} size="medium">
               + Create Work Order
             </Button>
           </div>
 
           {error && (
             <div style={errorStyle}>
-              <strong>Error:</strong> {error}
+              <span style={{ fontSize: 'var(--font-size-xl)' }}>⚠️</span>
+              <div>
+                <strong>Error:</strong> {error}
+              </div>
             </div>
           )}
 

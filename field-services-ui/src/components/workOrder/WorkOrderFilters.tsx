@@ -23,34 +23,55 @@ interface ValidationError {
   message: string;
 }
 
+// Add responsive styles
+if (typeof document !== 'undefined') {
+  const styleSheet = document.createElement('style');
+  styleSheet.textContent = `
+    @media (max-width: 768px) {
+      .filter-row {
+        grid-template-columns: 1fr !important;
+        gap: var(--spacing-sm) !important;
+      }
+    }
+  `;
+  if (!document.getElementById('filter-styles')) {
+    styleSheet.id = 'filter-styles';
+    document.head.appendChild(styleSheet);
+  }
+}
+
 export const WorkOrderFilters = ({ onFilter, isLoading = false }: WorkOrderFiltersProps) => {
   const [filterType, setFilterType] = useState<FilterCriteria['type']>('all');
   const [filterValue, setFilterValue] = useState('');
   const [error, setError] = useState<ValidationError | null>(null);
 
   const containerStyle = {
-    backgroundColor: 'white',
-    padding: '1.5rem',
-    borderRadius: '8px',
-    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-    marginBottom: '1.5rem',
+    backgroundColor: 'var(--color-surface)',
+    padding: 'var(--spacing-lg)',
+    borderRadius: 'var(--radius-lg)',
+    boxShadow: 'var(--shadow-md)',
+    marginBottom: 'var(--spacing-xl)',
+    border: '1px solid var(--color-border-light)',
   };
 
   const rowStyle = {
     display: 'grid',
     gridTemplateColumns: '200px 1fr auto',
-    gap: '1rem',
+    gap: 'var(--spacing-md)',
     alignItems: 'flex-end',
   };
 
   const errorStyle = {
-    backgroundColor: '#ffebee',
-    border: '1px solid #f44336',
-    borderRadius: '4px',
-    padding: '0.5rem',
-    marginTop: '0.5rem',
-    color: '#c62828',
-    fontSize: '0.875rem',
+    backgroundColor: 'var(--color-error-light)',
+    border: '2px solid var(--color-error)',
+    borderRadius: 'var(--radius-md)',
+    padding: 'var(--spacing-sm) var(--spacing-md)',
+    marginTop: 'var(--spacing-sm)',
+    color: 'var(--color-error)',
+    fontSize: 'var(--font-size-sm)',
+    display: 'flex',
+    alignItems: 'center',
+    gap: 'var(--spacing-xs)',
   };
 
   const filterTypeOptions = [
@@ -160,10 +181,18 @@ export const WorkOrderFilters = ({ onFilter, isLoading = false }: WorkOrderFilte
 
   return (
     <div style={containerStyle}>
-      <h3 style={{ marginTop: 0, marginBottom: '1rem', fontSize: '1.125rem', color: '#333' }}>
-        Filter Work Orders
+      <h3
+        style={{
+          marginTop: 0,
+          marginBottom: 'var(--spacing-md)',
+          fontSize: 'var(--font-size-lg)',
+          color: 'var(--color-text-primary)',
+          fontWeight: 'var(--font-weight-semibold)',
+        }}
+      >
+        🔍 Filter Work Orders
       </h3>
-      <div style={rowStyle}>
+      <div className="filter-row" style={rowStyle}>
         <Select
           name="filterType"
           label="Filter By"
@@ -174,13 +203,16 @@ export const WorkOrderFilters = ({ onFilter, isLoading = false }: WorkOrderFilte
           fullWidth
         />
         {renderValueInput()}
-        <Button onClick={handleApplyFilter} disabled={isLoading} variant="primary">
-          Apply Filter
+        <Button onClick={handleApplyFilter} disabled={isLoading} variant="primary" size="medium">
+          {isLoading ? 'Loading...' : 'Apply Filter'}
         </Button>
       </div>
       {error && (
         <div style={errorStyle}>
-          <strong>Error:</strong> {error.message}
+          <span>⚠️</span>
+          <span>
+            <strong>Error:</strong> {error.message}
+          </span>
         </div>
       )}
     </div>

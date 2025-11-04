@@ -26,13 +26,15 @@ const styles = {
     display: 'flex',
     flexDirection: 'column' as const,
     minHeight: '100vh',
+    backgroundColor: 'var(--color-background)',
   },
   main: {
     flex: 1,
-    maxWidth: '1200px',
+    maxWidth: '1400px',
     width: '100%',
     margin: '0 auto',
-    padding: '2rem 1rem',
+    padding: 'var(--spacing-xl) var(--spacing-md)',
+    animation: 'fadeIn 0.3s ease-in',
   },
 };
 
