@@ -17,6 +17,35 @@ interface WorkOrderListProps {
   isLoading?: boolean;
 }
 
+// Add table row hover styles
+if (typeof document !== 'undefined') {
+  const styleSheet = document.createElement('style');
+  styleSheet.textContent = `
+    .work-order-table tbody tr {
+      transition: background-color var(--transition-fast);
+    }
+    .work-order-table tbody tr:hover {
+      background-color: var(--color-gray-50);
+    }
+    .work-order-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+    @media (max-width: 1024px) {
+      .work-order-table {
+        font-size: var(--font-size-xs);
+      }
+      .work-order-table th,
+      .work-order-table td {
+        padding: var(--spacing-sm);
+      }
+    }
+  `;
+  if (!document.getElementById('work-order-list-styles')) {
+    styleSheet.id = 'work-order-list-styles';
+    document.head.appendChild(styleSheet);
+  }
+}
+
 export const WorkOrderList = ({
   workOrders,
   onView,
@@ -46,77 +75,93 @@ export const WorkOrderList = ({
   const tableStyle = {
     width: '100%',
     borderCollapse: 'collapse' as const,
-    backgroundColor: 'white',
-    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-    borderRadius: '4px',
+    backgroundColor: 'var(--color-surface)',
+    boxShadow: 'var(--shadow-lg)',
+    borderRadius: 'var(--radius-lg)',
     overflow: 'hidden',
+    border: '1px solid var(--color-border-light)',
   };
 
   const thStyle = {
-    backgroundColor: '#1976d2',
-    color: 'white',
-    padding: '1rem',
+    backgroundColor: 'var(--color-primary)',
+    color: 'var(--color-text-inverse)',
+    padding: 'var(--spacing-md) var(--spacing-lg)',
     textAlign: 'left' as const,
-    fontWeight: 600,
-    fontSize: '0.875rem',
+    fontWeight: 'var(--font-weight-semibold)',
+    fontSize: 'var(--font-size-sm)',
     textTransform: 'uppercase' as const,
+    letterSpacing: '0.5px',
   };
 
   const tdStyle = {
-    padding: '1rem',
-    borderBottom: '1px solid #e0e0e0',
-    fontSize: '0.875rem',
+    padding: 'var(--spacing-md) var(--spacing-lg)',
+    borderBottom: '1px solid var(--color-border-light)',
+    fontSize: 'var(--font-size-sm)',
+    color: 'var(--color-text-primary)',
   };
 
   const statusStyle = (status: string) => ({
-    display: 'inline-block',
-    padding: '0.25rem 0.75rem',
-    borderRadius: '12px',
-    fontSize: '0.75rem',
-    fontWeight: 600,
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: 'var(--spacing-xs)',
+    padding: 'var(--spacing-xs) var(--spacing-md)',
+    borderRadius: 'var(--radius-full)',
+    fontSize: 'var(--font-size-xs)',
+    fontWeight: 'var(--font-weight-semibold)',
     textTransform: 'uppercase' as const,
+    letterSpacing: '0.5px',
     backgroundColor:
       status === 'COMPLETED'
-        ? '#4caf50'
+        ? 'var(--color-success-light)'
         : status === 'IN_PROGRESS'
-          ? '#2196f3'
+          ? 'var(--color-info-light)'
           : status === 'PENDING'
-            ? '#ff9800'
+            ? 'var(--color-warning-light)'
             : status === 'CANCELLED'
-              ? '#f44336'
-              : '#9e9e9e',
-    color: 'white',
+              ? 'var(--color-error-light)'
+              : 'var(--color-gray-500)',
+    color: 'var(--color-text-inverse)',
+    boxShadow: 'var(--shadow-sm)',
   });
 
   const priorityStyle = (priority: string) => ({
-    display: 'inline-block',
-    padding: '0.25rem 0.75rem',
-    borderRadius: '12px',
-    fontSize: '0.75rem',
-    fontWeight: 600,
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: 'var(--spacing-xs)',
+    padding: 'var(--spacing-xs) var(--spacing-md)',
+    borderRadius: 'var(--radius-full)',
+    fontSize: 'var(--font-size-xs)',
+    fontWeight: 'var(--font-weight-semibold)',
     textTransform: 'uppercase' as const,
+    letterSpacing: '0.5px',
     backgroundColor:
       priority === 'EMERGENCY'
-        ? '#d32f2f'
+        ? '#c62828'
         : priority === 'CRITICAL'
-          ? '#f44336'
+          ? 'var(--color-error-light)'
           : priority === 'HIGH'
-            ? '#ff9800'
+            ? 'var(--color-warning-light)'
             : priority === 'NORMAL'
-              ? '#2196f3'
-              : '#9e9e9e',
-    color: 'white',
+              ? 'var(--color-info-light)'
+              : 'var(--color-gray-500)',
+    color: 'var(--color-text-inverse)',
+    boxShadow: 'var(--shadow-sm)',
   });
 
   const actionButtonsStyle = {
     display: 'flex',
-    gap: '0.5rem',
+    gap: 'var(--spacing-xs)',
+    flexWrap: 'wrap' as const,
   };
 
   const emptyStateStyle = {
     textAlign: 'center' as const,
-    padding: '3rem',
-    color: '#666',
+    padding: 'var(--spacing-3xl)',
+    color: 'var(--color-text-secondary)',
+    backgroundColor: 'var(--color-surface)',
+    borderRadius: 'var(--radius-lg)',
+    boxShadow: 'var(--shadow-md)',
+    border: '2px dashed var(--color-border)',
   };
 
   const formatDate = (dateString?: string) => {
@@ -132,7 +177,27 @@ export const WorkOrderList = ({
   if (isLoading) {
     return (
       <div style={emptyStateStyle}>
-        <p>Loading work orders...</p>
+        <div
+          style={{
+            fontSize: 'var(--font-size-3xl)',
+            marginBottom: 'var(--spacing-md)',
+            animation: 'pulse 1.5s ease-in-out infinite',
+          }}
+        >
+          ⏳
+        </div>
+        <p style={{ fontSize: 'var(--font-size-lg)', fontWeight: 'var(--font-weight-medium)' }}>
+          Loading work orders...
+        </p>
+        <p
+          style={{
+            fontSize: 'var(--font-size-sm)',
+            marginTop: 'var(--spacing-sm)',
+            color: 'var(--color-text-disabled)',
+          }}
+        >
+          Please wait while we fetch your data
+        </p>
       </div>
     );
   }
@@ -140,17 +205,34 @@ export const WorkOrderList = ({
   if (workOrders.length === 0) {
     return (
       <div style={emptyStateStyle}>
-        <p>No work orders found.</p>
-        <p style={{ fontSize: '0.875rem', marginTop: '0.5rem' }}>
-          Create a new work order to get started.
+        <div style={{ fontSize: 'var(--font-size-4xl)', marginBottom: 'var(--spacing-md)' }}>
+          📭
+        </div>
+        <p
+          style={{
+            fontSize: 'var(--font-size-xl)',
+            fontWeight: 'var(--font-weight-semibold)',
+            color: 'var(--color-text-primary)',
+          }}
+        >
+          No work orders found
+        </p>
+        <p
+          style={{
+            fontSize: 'var(--font-size-sm)',
+            marginTop: 'var(--spacing-sm)',
+            color: 'var(--color-text-secondary)',
+          }}
+        >
+          Create a new work order to get started with your field service operations.
         </p>
       </div>
     );
   }
 
   return (
-    <div style={{ overflowX: 'auto' }}>
-      <table style={tableStyle}>
+    <div style={{ overflowX: 'auto', borderRadius: 'var(--radius-lg)' }}>
+      <table className="work-order-table" style={tableStyle}>
         <thead>
           <tr>
             <th style={thStyle}>WO Number</th>
