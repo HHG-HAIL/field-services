@@ -73,22 +73,53 @@ The service can be configured using environment variables or `application.yml`:
 
 ## API Documentation
 
-Once the service is running, you can access the API documentation at:
+### Interactive Documentation
+
+Once the service is running, you can access the interactive API documentation at:
 
 - **Swagger UI**: http://localhost:8085/swagger-ui.html
 - **OpenAPI JSON**: http://localhost:8085/v3/api-docs
 
-## Endpoints
+### Documentation Files
 
-### Health Check
+Comprehensive documentation is available in the `docs/` directory:
+
+- **[API Documentation](docs/API_DOCUMENTATION.md)** - Complete REST API reference with all endpoints, request/response formats, and examples
+- **[Error Handling](docs/ERROR_HANDLING.md)** - Detailed guide on error handling, exception types, and best practices
+
+### Main Endpoints
+
+#### Technician Management
+
+- **GET** `/api/v1/technicians` - List all technicians
+- **GET** `/api/v1/technicians/{id}` - Get technician by ID
+- **GET** `/api/v1/technicians/employee/{employeeId}` - Get technician by employee ID
+- **GET** `/api/v1/technicians/status/{status}` - Get technicians by status
+- **GET** `/api/v1/technicians/skill-level/{skillLevel}` - Get technicians by skill level
+- **GET** `/api/v1/technicians/skill/{skill}` - Get technicians by skill
+- **POST** `/api/v1/technicians` - Create new technician
+- **PUT** `/api/v1/technicians/{id}` - Update technician
+- **DELETE** `/api/v1/technicians/{id}` - Delete technician
+
+#### Health Check
 
 - **GET** `/api/v1/health` - Basic health check endpoint
 
-### Actuator Endpoints
+#### Actuator Endpoints
 
 - **GET** `/actuator/health` - Detailed health information
 - **GET** `/actuator/info` - Service information
 - **GET** `/actuator/metrics` - Service metrics
+
+### RESTful Standards
+
+The API follows REST best practices:
+
+- **HTTP Methods**: GET (read), POST (create), PUT (update), DELETE (remove)
+- **Status Codes**: 200 (OK), 201 (Created), 204 (No Content), 400 (Bad Request), 404 (Not Found), 409 (Conflict), 500 (Internal Server Error)
+- **Error Handling**: Centralized exception handling with consistent error response format
+- **Validation**: Input validation using Bean Validation annotations
+- **Documentation**: OpenAPI/Swagger documentation for all endpoints
 
 ## Database
 
@@ -126,6 +157,9 @@ mvn test jacoco:report
 
 ```
 technician-service/
+├── docs/                        # Documentation
+│   ├── API_DOCUMENTATION.md     # Complete API reference
+│   └── ERROR_HANDLING.md        # Error handling guide
 ├── src/
 │   ├── main/
 │   │   ├── java/com/hhg/fieldservices/technician/
@@ -136,7 +170,7 @@ technician-service/
 │   │   │   ├── model/           # Domain entities
 │   │   │   ├── dto/             # Data transfer objects
 │   │   │   ├── mapper/          # Object mappers
-│   │   │   ├── exception/       # Custom exceptions
+│   │   │   ├── exception/       # Custom exceptions & handlers
 │   │   │   └── TechnicianServiceApplication.java
 │   │   └── resources/
 │   │       ├── application.yml

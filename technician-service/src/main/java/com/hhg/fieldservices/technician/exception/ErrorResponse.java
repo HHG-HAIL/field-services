@@ -11,6 +11,7 @@ import java.util.List;
 
 /**
  * Standard error response structure for REST APIs.
+ * Provides consistent error format across all API endpoints.
  * 
  * @author Field Services Team
  * @version 1.0
@@ -31,9 +32,12 @@ public class ErrorResponse {
     @Schema(description = "Error message", example = "Technician not found with id: 1")
     private String message;
     
-    @Schema(description = "Error details")
+    @Schema(description = "Request path that caused the error", example = "/api/v1/technicians/1")
+    private String path;
+    
+    @Schema(description = "Error details or validation errors")
     private List<String> details;
     
-    @Schema(description = "Timestamp when error occurred")
+    @Schema(description = "Timestamp when error occurred", example = "2025-11-05T19:00:00")
     private LocalDateTime timestamp;
 }
