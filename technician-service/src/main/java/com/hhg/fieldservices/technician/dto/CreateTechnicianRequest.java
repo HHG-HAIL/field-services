@@ -39,7 +39,7 @@ public class CreateTechnicianRequest {
     private String email;
     
     @NotBlank(message = "Phone number is required")
-    @Pattern(regexp = "^[0-9\\-\\s\\(\\)\\+]+$", message = "Phone number must contain only valid characters")
+    @Pattern(regexp = "^[0-9\\-\\s\\(\\)\\+\\.]+$", message = "Phone number must contain only valid characters")
     @Schema(description = "Phone number", example = "555-1234", required = true)
     private String phoneNumber;
     

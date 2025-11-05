@@ -34,7 +34,7 @@ public class UpdateTechnicianRequest {
     @Schema(description = "Email address", example = "john.smith@example.com")
     private String email;
     
-    @Pattern(regexp = "^[0-9\\-\\s\\(\\)\\+]+$", message = "Phone number must contain only valid characters")
+    @Pattern(regexp = "^[0-9\\-\\s\\(\\)\\+\\.]+$", message = "Phone number must contain only valid characters")
     @Schema(description = "Phone number", example = "555-1234")
     private String phoneNumber;
     

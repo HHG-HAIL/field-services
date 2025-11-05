@@ -41,7 +41,7 @@ public interface TechnicianRepository extends JpaRepository<Technician, Long> {
      * 
      * @return list of available technicians
      */
-    @Query("SELECT t FROM Technician t WHERE t.status = 'AVAILABLE' ORDER BY t.lastName, t.firstName")
+    @Query("SELECT t FROM Technician t WHERE t.status = com.hhg.fieldservices.technician.model.TechnicianStatus.AVAILABLE ORDER BY t.lastName, t.firstName")
     List<Technician> findAvailableTechnicians();
     
     /**
