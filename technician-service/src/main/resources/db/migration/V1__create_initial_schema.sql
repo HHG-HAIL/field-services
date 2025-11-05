@@ -11,11 +11,25 @@ CREATE TABLE IF NOT EXISTS technicians (
     phone VARCHAR(20),
     status VARCHAR(20) NOT NULL,
     skill_level VARCHAR(20) NOT NULL,
+    address VARCHAR(500),
+    city VARCHAR(100),
+    state VARCHAR(50),
+    zip_code VARCHAR(20),
+    notes VARCHAR(1000),
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     version BIGINT NOT NULL DEFAULT 0
 );
 
+-- Create technician_skills table for many-to-many relationship
+CREATE TABLE IF NOT EXISTS technician_skills (
+    technician_id BIGINT NOT NULL,
+    skill VARCHAR(100) NOT NULL,
+    PRIMARY KEY (technician_id, skill),
+    FOREIGN KEY (technician_id) REFERENCES technicians(id) ON DELETE CASCADE
+);
+
 -- Create indexes for common queries
 CREATE INDEX idx_technicians_status ON technicians(status);
 CREATE INDEX idx_technicians_skill_level ON technicians(skill_level);
+CREATE INDEX idx_technician_skills_skill ON technician_skills(skill);
