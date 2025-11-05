@@ -21,6 +21,7 @@
 
     <modules>
         <module>work-order-service</module>
+        <module>technician-service</module>
     </modules>
 
     <build>
