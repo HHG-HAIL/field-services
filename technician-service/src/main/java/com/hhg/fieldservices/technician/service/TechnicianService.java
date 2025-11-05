@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Service class for managing technicians.
@@ -41,7 +40,7 @@ public class TechnicianService {
         log.debug("Fetching all technicians");
         return technicianRepository.findAll().stream()
                 .map(this::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /**
@@ -85,7 +84,7 @@ public class TechnicianService {
         log.debug("Fetching technicians with status: {}", status);
         return technicianRepository.findByStatus(status).stream()
                 .map(this::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /**
@@ -99,7 +98,7 @@ public class TechnicianService {
         log.debug("Fetching technicians with skill level: {}", skillLevel);
         return technicianRepository.findBySkillLevel(skillLevel).stream()
                 .map(this::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /**
