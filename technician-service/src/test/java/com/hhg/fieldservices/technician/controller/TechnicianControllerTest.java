@@ -314,6 +314,7 @@ class TechnicianControllerTest {
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.status").value(400))
             .andExpect(jsonPath("$.error").value("Bad Request"))
+            .andExpect(jsonPath("$.message").value("Invalid type for parameter 'id'. Expected type: Long"))
             .andExpect(jsonPath("$.path").value("/api/v1/technicians/invalid-id"));
         
         verify(technicianService, never()).findById(any());

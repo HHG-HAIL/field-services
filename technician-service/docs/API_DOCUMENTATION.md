@@ -528,7 +528,7 @@ GET /api/v1/technicians/invalid-id
 {
   "status": 400,
   "error": "Bad Request",
-  "message": "Invalid value 'invalid-id' for parameter 'id'. Expected type: Long",
+  "message": "Invalid type for parameter 'id'. Expected type: Long",
   "path": "/api/v1/technicians/invalid-id",
   "details": null,
   "timestamp": "2025-11-05T19:00:00"
