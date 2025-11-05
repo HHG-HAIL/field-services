@@ -23,8 +23,8 @@ import java.util.Set;
 @Table(name = "technicians", indexes = {
     @Index(name = "idx_employee_id", columnList = "employeeId", unique = true),
     @Index(name = "idx_email", columnList = "email", unique = true),
-    @Index(name = "idx_status", columnList = "status"),
-    @Index(name = "idx_skill_level", columnList = "skillLevel")
+    @Index(name = "idx_technicians_status", columnList = "status"),
+    @Index(name = "idx_technicians_skill_level", columnList = "skillLevel")
 })
 @EntityListeners(AuditingEntityListener.class)
 @Data
@@ -37,7 +37,7 @@ public class Technician {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @Column(nullable = false, unique = true, length = 50)
+    @Column(nullable = false, length = 50)
     private String employeeId;
     
     @Column(nullable = false, length = 100)
@@ -46,7 +46,7 @@ public class Technician {
     @Column(nullable = false, length = 100)
     private String lastName;
     
-    @Column(nullable = false, unique = true, length = 255)
+    @Column(nullable = false, length = 255)
     private String email;
     
     @Column(length = 20)
