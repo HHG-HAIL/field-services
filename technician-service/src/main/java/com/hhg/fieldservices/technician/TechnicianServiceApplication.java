@@ -2,6 +2,7 @@ package com.hhg.fieldservices.technician;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 /**
  * Main application class for the Technician Service.
@@ -11,6 +12,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @version 1.0
  */
 @SpringBootApplication
+@EnableJpaAuditing
 public class TechnicianServiceApplication {
 
     public static void main(String[] args) {
