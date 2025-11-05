@@ -5,6 +5,7 @@ import com.hhg.fieldservices.technician.dto.CreateTechnicianRequest;
 import com.hhg.fieldservices.technician.dto.TechnicianDto;
 import com.hhg.fieldservices.technician.dto.UpdateTechnicianRequest;
 import com.hhg.fieldservices.technician.exception.TechnicianNotFoundException;
+import com.hhg.fieldservices.technician.exception.TechnicianValidationException;
 import com.hhg.fieldservices.technician.model.TechnicianSkillLevel;
 import com.hhg.fieldservices.technician.model.TechnicianStatus;
 import com.hhg.fieldservices.technician.service.TechnicianService;
@@ -116,7 +117,8 @@ class TechnicianControllerTest {
         mockMvc.perform(get("/api/v1/technicians/99"))
             .andExpect(status().isNotFound())
             .andExpect(jsonPath("$.status").value(404))
-            .andExpect(jsonPath("$.message").value("Technician not found with id: 99"));
+            .andExpect(jsonPath("$.message").value("Technician not found with id: 99"))
+            .andExpect(jsonPath("$.path").value("/api/v1/technicians/99"));
         
         verify(technicianService).findById(99L);
     }
@@ -220,7 +222,9 @@ class TechnicianControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(invalidRequest)))
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.status").value(400));
+            .andExpect(jsonPath("$.status").value(400))
+            .andExpect(jsonPath("$.path").value("/api/v1/technicians"))
+            .andExpect(jsonPath("$.details").isArray());
         
         verify(technicianService, never()).create(any());
     }
@@ -279,8 +283,58 @@ class TechnicianControllerTest {
         // When & Then
         mockMvc.perform(delete("/api/v1/technicians/99"))
             .andExpect(status().isNotFound())
-            .andExpect(jsonPath("$.status").value(404));
+            .andExpect(jsonPath("$.status").value(404))
+            .andExpect(jsonPath("$.path").value("/api/v1/technicians/99"));
         
         verify(technicianService).delete(99L);
+    }
+    
+    @Test
+    void givenInvalidJsonBody_whenCreateTechnician_thenReturnBadRequest() throws Exception {
+        // Given - invalid JSON
+        String invalidJson = "{ invalid json }";
+        
+        // When & Then
+        mockMvc.perform(post("/api/v1/technicians")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(invalidJson))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.status").value(400))
+            .andExpect(jsonPath("$.error").value("Bad Request"))
+            .andExpect(jsonPath("$.message").value("Invalid request body format"))
+            .andExpect(jsonPath("$.path").value("/api/v1/technicians"));
+        
+        verify(technicianService, never()).create(any());
+    }
+    
+    @Test
+    void givenInvalidPathVariable_whenGetTechnicianById_thenReturnBadRequest() throws Exception {
+        // When & Then - passing a non-numeric ID
+        mockMvc.perform(get("/api/v1/technicians/invalid-id"))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.status").value(400))
+            .andExpect(jsonPath("$.error").value("Bad Request"))
+            .andExpect(jsonPath("$.path").value("/api/v1/technicians/invalid-id"));
+        
+        verify(technicianService, never()).findById(any());
+    }
+    
+    @Test
+    void givenDuplicateEmployeeId_whenCreateTechnician_thenReturnConflict() throws Exception {
+        // Given - employee ID already exists
+        when(technicianService.create(any(CreateTechnicianRequest.class)))
+            .thenThrow(new TechnicianValidationException("Technician with employee ID EMP-002 already exists"));
+        
+        // When & Then
+        mockMvc.perform(post("/api/v1/technicians")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(createRequest)))
+            .andExpect(status().isConflict())
+            .andExpect(jsonPath("$.status").value(409))
+            .andExpect(jsonPath("$.error").value("Conflict"))
+            .andExpect(jsonPath("$.message").value("Technician with employee ID EMP-002 already exists"))
+            .andExpect(jsonPath("$.path").value("/api/v1/technicians"));
+        
+        verify(technicianService).create(any(CreateTechnicianRequest.class));
     }
 }
