@@ -45,6 +45,9 @@ class TechnicianControllerTest {
     @MockBean
     private TechnicianService technicianService;
     
+    @MockBean
+    private com.hhg.fieldservices.technician.service.WorkOrderIntegrationService workOrderIntegrationService;
+    
     private TechnicianDto testTechnicianDto;
     private CreateTechnicianRequest createRequest;
     
@@ -337,5 +340,95 @@ class TechnicianControllerTest {
             .andExpect(jsonPath("$.path").value("/api/v1/technicians"));
         
         verify(technicianService).create(any(CreateTechnicianRequest.class));
+    }
+    
+    @Test
+    void whenGetWorkOrdersForTechnician_thenReturnWorkOrdersList() throws Exception {
+        // Given
+        Long technicianId = 1L;
+        List<com.hhg.fieldservices.technician.dto.WorkOrderSummaryDto> workOrders = List.of(
+            com.hhg.fieldservices.technician.dto.WorkOrderSummaryDto.builder()
+                .id(1L)
+                .workOrderNumber("WO-20251106123456")
+                .title("HVAC Repair")
+                .status("ASSIGNED")
+                .priority("HIGH")
+                .customerId(100L)
+                .customerName("John Doe")
+                .build(),
+            com.hhg.fieldservices.technician.dto.WorkOrderSummaryDto.builder()
+                .id(2L)
+                .workOrderNumber("WO-20251106123457")
+                .title("Plumbing Fix")
+                .status("IN_PROGRESS")
+                .priority("NORMAL")
+                .customerId(101L)
+                .customerName("Jane Smith")
+                .build()
+        );
+        
+        when(technicianService.findById(technicianId)).thenReturn(testTechnicianDto);
+        when(workOrderIntegrationService.getWorkOrdersForTechnician(technicianId)).thenReturn(workOrders);
+        
+        // When & Then
+        mockMvc.perform(get("/api/v1/technicians/{id}/work-orders", technicianId))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$", hasSize(2)))
+            .andExpect(jsonPath("$[0].id").value(1))
+            .andExpect(jsonPath("$[0].workOrderNumber").value("WO-20251106123456"))
+            .andExpect(jsonPath("$[0].title").value("HVAC Repair"))
+            .andExpect(jsonPath("$[0].status").value("ASSIGNED"))
+            .andExpect(jsonPath("$[1].id").value(2))
+            .andExpect(jsonPath("$[1].workOrderNumber").value("WO-20251106123457"));
+        
+        verify(technicianService).findById(technicianId);
+        verify(workOrderIntegrationService).getWorkOrdersForTechnician(technicianId);
+    }
+    
+    @Test
+    void whenGetWorkOrdersForNonExistentTechnician_thenReturn404() throws Exception {
+        // Given
+        Long technicianId = 999L;
+        when(technicianService.findById(technicianId))
+            .thenThrow(new TechnicianNotFoundException(technicianId));
+        
+        // When & Then
+        mockMvc.perform(get("/api/v1/technicians/{id}/work-orders", technicianId))
+            .andExpect(status().isNotFound())
+            .andExpect(jsonPath("$.status").value(404))
+            .andExpect(jsonPath("$.error").value("Not Found"));
+        
+        verify(technicianService).findById(technicianId);
+        verify(workOrderIntegrationService, never()).getWorkOrdersForTechnician(any());
+    }
+    
+    @Test
+    void whenGetAvailableTechnicians_thenReturnActiveTechnicians() throws Exception {
+        // Given
+        List<TechnicianDto> activeTechnicians = List.of(
+            testTechnicianDto,
+            TechnicianDto.builder()
+                .id(2L)
+                .employeeId("EMP-002")
+                .firstName("Jane")
+                .lastName("Doe")
+                .email("jane.doe@example.com")
+                .status(TechnicianStatus.ACTIVE)
+                .skillLevel(TechnicianSkillLevel.INTERMEDIATE)
+                .build()
+        );
+        
+        when(technicianService.findByStatus(TechnicianStatus.ACTIVE)).thenReturn(activeTechnicians);
+        
+        // When & Then
+        mockMvc.perform(get("/api/v1/technicians/available"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$", hasSize(2)))
+            .andExpect(jsonPath("$[0].id").value(1))
+            .andExpect(jsonPath("$[0].status").value("ACTIVE"))
+            .andExpect(jsonPath("$[1].id").value(2))
+            .andExpect(jsonPath("$[1].status").value("ACTIVE"));
+        
+        verify(technicianService).findByStatus(TechnicianStatus.ACTIVE);
     }
 }

@@ -3,10 +3,12 @@ package com.hhg.fieldservices.technician.controller;
 import com.hhg.fieldservices.technician.dto.CreateTechnicianRequest;
 import com.hhg.fieldservices.technician.dto.TechnicianDto;
 import com.hhg.fieldservices.technician.dto.UpdateTechnicianRequest;
+import com.hhg.fieldservices.technician.dto.WorkOrderSummaryDto;
 import com.hhg.fieldservices.technician.exception.ErrorResponse;
 import com.hhg.fieldservices.technician.model.TechnicianSkillLevel;
 import com.hhg.fieldservices.technician.model.TechnicianStatus;
 import com.hhg.fieldservices.technician.service.TechnicianService;
+import com.hhg.fieldservices.technician.service.WorkOrderIntegrationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -39,6 +41,7 @@ import java.util.List;
 public class TechnicianController {
     
     private final TechnicianService technicianService;
+    private final WorkOrderIntegrationService workOrderIntegrationService;
     
     /**
      * Get all technicians
@@ -231,5 +234,47 @@ public class TechnicianController {
         log.debug("DELETE /api/v1/technicians/{} - Deleting technician", id);
         technicianService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+    
+    /**
+     * Get work orders assigned to a technician
+     */
+    @Operation(
+        summary = "Get work orders for technician",
+        description = "Retrieves all work orders assigned to a specific technician. Integrates with work-order-service."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Successfully retrieved work orders"),
+        @ApiResponse(responseCode = "404", description = "Technician not found",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    @GetMapping("/{id}/work-orders")
+    public ResponseEntity<List<WorkOrderSummaryDto>> getWorkOrdersForTechnician(
+            @Parameter(description = "Technician ID", required = true, example = "1")
+            @PathVariable Long id) {
+        log.debug("GET /api/v1/technicians/{}/work-orders - Fetching work orders for technician", id);
+        
+        // Verify technician exists
+        technicianService.findById(id);
+        
+        List<WorkOrderSummaryDto> workOrders = workOrderIntegrationService.getWorkOrdersForTechnician(id);
+        return ResponseEntity.ok(workOrders);
+    }
+    
+    /**
+     * Get available technicians for work order assignment
+     */
+    @Operation(
+        summary = "Get available technicians",
+        description = "Retrieves technicians with ACTIVE status who are available for work order assignment"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Successfully retrieved available technicians")
+    })
+    @GetMapping("/available")
+    public ResponseEntity<List<TechnicianDto>> getAvailableTechnicians() {
+        log.debug("GET /api/v1/technicians/available - Fetching available technicians");
+        List<TechnicianDto> technicians = technicianService.findByStatus(TechnicianStatus.ACTIVE);
+        return ResponseEntity.ok(technicians);
     }
 }

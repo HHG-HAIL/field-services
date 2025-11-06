@@ -66,3 +66,8 @@ springdoc:
     tags-sorter: alpha
     operations-sorter: alpha
   show-actuator: true
+
+# Integration with other services
+integration:
+  work-order-service:
+    url: ${WORK_ORDER_SERVICE_URL:http://localhost:8084}

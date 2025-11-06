@@ -101,6 +101,11 @@ Comprehensive documentation is available in the `docs/` directory:
 - **PUT** `/api/v1/technicians/{id}` - Update technician
 - **DELETE** `/api/v1/technicians/{id}` - Delete technician
 
+#### Work Order Integration
+
+- **GET** `/api/v1/technicians/{id}/work-orders` - Get work orders assigned to a technician
+- **GET** `/api/v1/technicians/available` - Get available technicians for assignment
+
 #### Health Check
 
 - **GET** `/api/v1/health` - Basic health check endpoint
@@ -185,10 +190,36 @@ technician-service/
 
 Please follow the project's contributing guidelines and coding standards. See [CONTRIBUTING.md](../CONTRIBUTING.md) for details.
 
+## Integration with Other Services
+
+### work-order-service Integration
+
+The technician service integrates with work-order-service to provide:
+
+- **Work Order Tracking**: Get all work orders assigned to a technician
+- **Available Technicians**: Query active technicians for work order assignment
+
+**Configuration**:
+
+Set the work-order-service URL via environment variable:
+```bash
+export WORK_ORDER_SERVICE_URL=http://localhost:8084
+```
+
+Or configure in `application.yml`:
+```yaml
+integration:
+  work-order-service:
+    url: http://localhost:8084
+```
+
+For detailed integration documentation, see:
+- [Work Order Assignment Integration Guide](../docs/WORK_ORDER_ASSIGNMENT_INTEGRATION.md)
+
 ## Related Services
 
-- **work-order-service** - Manages work orders
-- (Other services to be added)
+- **work-order-service** - Manages work orders and assignments
+- **field-service-ui** - React-based frontend for field services management
 
 ## License
 
