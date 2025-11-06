@@ -55,10 +55,12 @@ public class WorkOrderIntegrationService {
             );
             
             List<WorkOrderSummaryDto> workOrders = response.getBody();
-            log.info("Retrieved {} work orders for technician {}", 
-                workOrders != null ? workOrders.size() : 0, technicianId);
+            if (workOrders == null) {
+                return Collections.emptyList();
+            }
             
-            return workOrders != null ? workOrders : Collections.emptyList();
+            log.info("Retrieved {} work orders for technician {}", workOrders.size(), technicianId);
+            return workOrders;
             
         } catch (RestClientException e) {
             log.error("Error fetching work orders for technician {}: {}", technicianId, e.getMessage());

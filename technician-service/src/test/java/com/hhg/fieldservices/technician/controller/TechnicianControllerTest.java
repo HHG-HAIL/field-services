@@ -4,11 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hhg.fieldservices.technician.dto.CreateTechnicianRequest;
 import com.hhg.fieldservices.technician.dto.TechnicianDto;
 import com.hhg.fieldservices.technician.dto.UpdateTechnicianRequest;
+import com.hhg.fieldservices.technician.dto.WorkOrderSummaryDto;
 import com.hhg.fieldservices.technician.exception.TechnicianNotFoundException;
 import com.hhg.fieldservices.technician.exception.TechnicianValidationException;
 import com.hhg.fieldservices.technician.model.TechnicianSkillLevel;
 import com.hhg.fieldservices.technician.model.TechnicianStatus;
 import com.hhg.fieldservices.technician.service.TechnicianService;
+import com.hhg.fieldservices.technician.service.WorkOrderIntegrationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +48,7 @@ class TechnicianControllerTest {
     private TechnicianService technicianService;
     
     @MockBean
-    private com.hhg.fieldservices.technician.service.WorkOrderIntegrationService workOrderIntegrationService;
+    private WorkOrderIntegrationService workOrderIntegrationService;
     
     private TechnicianDto testTechnicianDto;
     private CreateTechnicianRequest createRequest;
@@ -346,8 +348,8 @@ class TechnicianControllerTest {
     void whenGetWorkOrdersForTechnician_thenReturnWorkOrdersList() throws Exception {
         // Given
         Long technicianId = 1L;
-        List<com.hhg.fieldservices.technician.dto.WorkOrderSummaryDto> workOrders = List.of(
-            com.hhg.fieldservices.technician.dto.WorkOrderSummaryDto.builder()
+        List<WorkOrderSummaryDto> workOrders = List.of(
+            WorkOrderSummaryDto.builder()
                 .id(1L)
                 .workOrderNumber("WO-20251106123456")
                 .title("HVAC Repair")
@@ -356,7 +358,7 @@ class TechnicianControllerTest {
                 .customerId(100L)
                 .customerName("John Doe")
                 .build(),
-            com.hhg.fieldservices.technician.dto.WorkOrderSummaryDto.builder()
+            WorkOrderSummaryDto.builder()
                 .id(2L)
                 .workOrderNumber("WO-20251106123457")
                 .title("Plumbing Fix")
