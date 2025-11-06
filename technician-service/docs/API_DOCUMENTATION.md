@@ -737,6 +737,140 @@ http://localhost:8080/v3/api-docs
 7. **Implement retry logic** with exponential backoff for 5xx errors
 8. **Use pagination** for list endpoints (when available in future versions)
 
+### 9. Get Work Orders for Technician
+
+Retrieve all work orders assigned to a specific technician. This endpoint integrates with the work-order-service.
+
+```http
+GET /api/v1/technicians/{id}/work-orders
+```
+
+**Path Parameters**:
+- `id` (Long, required): Technician ID
+
+**Response**: `200 OK`
+
+```json
+[
+  {
+    "id": 1,
+    "workOrderNumber": "WO-20251106123456",
+    "title": "HVAC Repair",
+    "description": "Air conditioning unit not cooling",
+    "status": "ASSIGNED",
+    "priority": "HIGH",
+    "customerId": 100,
+    "customerName": "John Doe",
+    "serviceAddress": "123 Main St",
+    "city": "Springfield",
+    "state": "IL",
+    "zipCode": "62701",
+    "scheduledDate": "2025-11-10T10:00:00",
+    "startedAt": null,
+    "completedAt": null,
+    "estimatedCost": 500.00,
+    "createdAt": "2025-11-06T10:00:00",
+    "updatedAt": "2025-11-06T12:00:00"
+  },
+  {
+    "id": 2,
+    "workOrderNumber": "WO-20251106123457",
+    "title": "Plumbing Fix",
+    "description": "Leaking pipe under sink",
+    "status": "IN_PROGRESS",
+    "priority": "NORMAL",
+    "customerId": 101,
+    "customerName": "Jane Smith",
+    "serviceAddress": "456 Oak Ave",
+    "city": "Springfield",
+    "state": "IL",
+    "zipCode": "62702",
+    "scheduledDate": "2025-11-09T14:00:00",
+    "startedAt": "2025-11-09T14:15:00",
+    "completedAt": null,
+    "estimatedCost": 250.00,
+    "createdAt": "2025-11-05T09:00:00",
+    "updatedAt": "2025-11-09T14:15:00"
+  }
+]
+```
+
+**Error Responses**:
+
+`404 Not Found` - Technician does not exist
+```json
+{
+  "timestamp": "2025-11-06T12:00:00.000+00:00",
+  "status": 404,
+  "error": "Not Found",
+  "message": "Technician not found with id: 999",
+  "path": "/api/v1/technicians/999/work-orders"
+}
+```
+
+**Notes**:
+- Returns an empty array if the technician has no assigned work orders
+- If work-order-service is unavailable, returns an empty array (graceful degradation)
+- Work order data is fetched in real-time from work-order-service
+
+### 10. Get Available Technicians
+
+Retrieve all technicians with ACTIVE status who are available for work order assignment.
+
+```http
+GET /api/v1/technicians/available
+```
+
+**Response**: `200 OK`
+
+```json
+[
+  {
+    "id": 1,
+    "employeeId": "EMP-001",
+    "firstName": "John",
+    "lastName": "Smith",
+    "email": "john.smith@example.com",
+    "phone": "555-0100",
+    "status": "ACTIVE",
+    "skillLevel": "SENIOR",
+    "skills": ["HVAC", "Plumbing", "Electrical"],
+    "address": "123 Main St",
+    "city": "Springfield",
+    "state": "IL",
+    "zipCode": "62701",
+    "notes": "Available for emergency calls",
+    "createdAt": "2025-01-15T10:00:00",
+    "updatedAt": "2025-01-15T10:00:00",
+    "version": 0
+  },
+  {
+    "id": 2,
+    "employeeId": "EMP-002",
+    "firstName": "Jane",
+    "lastName": "Doe",
+    "email": "jane.doe@example.com",
+    "phone": "555-0200",
+    "status": "ACTIVE",
+    "skillLevel": "INTERMEDIATE",
+    "skills": ["HVAC", "Plumbing"],
+    "address": "456 Oak Ave",
+    "city": "Springfield",
+    "state": "IL",
+    "zipCode": "62702",
+    "notes": null,
+    "createdAt": "2025-01-20T11:00:00",
+    "updatedAt": "2025-01-20T11:00:00",
+    "version": 0
+  }
+]
+```
+
+**Notes**:
+- Only returns technicians with status = ACTIVE
+- Useful for UI components that need to show available technicians for assignment
+- Returns an empty array if no active technicians exist
+
 ## Version History
 
 ### Version 1.0.0 (Current)
@@ -747,6 +881,9 @@ http://localhost:8080/v3/api-docs
 - Validation for all input fields
 - Support for filtering by status, skill level, and skills
 - Swagger/OpenAPI documentation
+- **NEW**: Integration with work-order-service for technician work order tracking
+- **NEW**: Endpoint to retrieve work orders assigned to a technician
+- **NEW**: Endpoint to get available technicians for assignment
 
 ## Support
 
